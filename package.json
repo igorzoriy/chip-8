@@ -1,0 +1,35 @@
+{
+  "name": "chip-8",
+  "version": "1.0.0",
+  "description": "Yet another CHIP-8 emulator",
+  "private": true,
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build",
+    "check": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igorzoriy/chip-8.git"
+  },
+  "keywords": [
+    "chip-8",
+    "chip8",
+    "emulator"
+  ],
+  "author": "Igor Zoriy",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/igorzoriy/chip-8/issues"
+  },
+  "homepage": "https://github.com/igorzoriy/chip-8#readme",
+  "devDependencies": {
+    "@parcel/validator-typescript": "^2.3.1",
+    "jest": "^27.5.1",
+    "parcel": "^2.3.1",
+    "typescript": "^4.5.5"
+  },
+  "browserslist": ">= 1%, last 2 versions, not dead"
+}
