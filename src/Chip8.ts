@@ -3,7 +3,7 @@ export class Chip8 {
   opcode: number = 0;
   I: number = 0;
   pc: number = 0;
-  v: ArrayBuffer = new ArrayBuffer(0);
+  vRegisters: Uint8Array = new Uint8Array(0);
 
   constructor() {
     this.initialize();
@@ -14,7 +14,7 @@ export class Chip8 {
     this.opcode = 0;
     this.I = 0;
     this.pc = 0x200;
-    this.v = new ArrayBuffer(8);
+    this.vRegisters = new Uint8Array(16);
   }
 
   loadRom(rom: ArrayBuffer) {
@@ -29,6 +29,12 @@ export class Chip8 {
     switch (opcode & 0xf000) {
       case 0xa000:
         this.I = opcode & 0x0fff;
+        this.pc += 2;
+        break;
+      case 0x6000:
+        const number = (opcode & 0x0f00) >> 8;
+        const value = opcode & 0x00ff;
+        this.vRegisters[number] = value;
         this.pc += 2;
         break;
       default:

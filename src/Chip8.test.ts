@@ -14,7 +14,7 @@ describe("Chip8", () => {
     expect(chip.opcode).toBe(0);
     expect(chip.I).toBe(0);
     expect(chip.pc).toBe(0x200);
-    expect(chip.v.byteLength).toBe(8);
+    expect(chip.vRegisters.length).toBe(16);
   });
 
   test("a rom is being loaded to chip memory", () => {
@@ -32,6 +32,15 @@ describe("Chip8", () => {
     expect(chip.pc).toBe(0x200);
     chip.performCycle();
     expect(chip.I).toBe(0x123);
+    expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `6XNN` opcode", () => {
+    chip.loadRom(generateRom(0x6c, 0x95));
+    expect(chip.vRegisters[0]).toBe(0);
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.vRegisters[0xc]).toBe(0x95);
     expect(chip.pc).toBe(0x202);
   });
 });
