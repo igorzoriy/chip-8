@@ -24,6 +24,15 @@ export class Chip8 {
   }
 
   performCycle() {
-    console.log("cycle");
+    const view = new DataView(this.memory);
+    const opcode = view.getUint16(this.pc);
+    switch (opcode & 0xf000) {
+      case 0xa000:
+        this.I = opcode & 0x0fff;
+        this.pc += 2;
+        break;
+      default:
+        throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
+    }
   }
 }
