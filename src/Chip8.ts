@@ -32,11 +32,14 @@ export class Chip8 {
         this.pc += 2;
         break;
       case 0x6000:
-        const number = (opcode & 0x0f00) >> 8;
-        const value = opcode & 0x00ff;
-        this.vRegisters[number] = value;
+        this.vRegisters[(opcode & 0x0f00) >> 8] = opcode & 0x00ff;
         this.pc += 2;
         break;
+      case 0x7000:
+        this.vRegisters[(opcode & 0x0f00) >> 8] += opcode & 0x00ff;
+        this.pc += 2;
+        break;
+
       default:
         throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
     }

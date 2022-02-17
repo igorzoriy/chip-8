@@ -37,10 +37,20 @@ describe("Chip8", () => {
 
   test("chip executes `6XNN` opcode", () => {
     chip.loadRom(generateRom(0x6c, 0x95));
-    expect(chip.vRegisters[0]).toBe(0);
+    expect(chip.vRegisters[0xc]).toBe(0);
     expect(chip.pc).toBe(0x200);
     chip.performCycle();
     expect(chip.vRegisters[0xc]).toBe(0x95);
     expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `7XNN` opcode", () => {
+    chip.loadRom(generateRom(0x62, 0x02, 0x72, 0x05));
+    expect(chip.vRegisters[2]).toBe(0);
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    chip.performCycle();
+    expect(chip.vRegisters[2]).toBe(7);
+    expect(chip.pc).toBe(0x204);
   });
 });
