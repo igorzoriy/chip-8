@@ -39,7 +39,58 @@ export class Chip8 {
         this.vRegisters[(opcode & 0x0f00) >> 8] += opcode & 0x00ff;
         this.pc += 2;
         break;
-
+      case 0x8000: // 8XYN
+        const x = (opcode & 0x0f00) >> 8;
+        const y = (opcode & 0x00f0) >> 4;
+        switch (opcode & 0x000f) {
+          case 0x0000: // 8XY0
+            this.vRegisters[x] = this.vRegisters[y];
+            this.pc += 2;
+            break;
+          case 0x0001: // 8XY1
+            this.vRegisters[x] |= this.vRegisters[y];
+            this.pc += 2;
+            break;
+          case 0x0002: // 8XY2
+            this.vRegisters[x] &= this.vRegisters[y];
+            this.pc += 2;
+            break;
+          case 0x0003: // 8XY3
+            this.vRegisters[x] ^= this.vRegisters[y];
+            this.pc += 2;
+            break;
+          case 0x0004: // 8XY4
+            const sum = this.vRegisters[x] + this.vRegisters[y];
+            this.vRegisters[x] = sum;
+            this.vRegisters[0xf] = sum > 0xff ? 1 : 0;
+            this.pc += 2;
+            break;
+          case 0x0005: // 8XY5
+            const diff = this.vRegisters[x] - this.vRegisters[y];
+            this.vRegisters[x] = diff;
+            this.vRegisters[0xf] = diff < 0 ? 0 : 1;
+            this.pc += 2;
+            break;
+          case 0x0006: // 8XY6
+            this.vRegisters[0xf] = this.vRegisters[x] & 0x1;
+            this.vRegisters[x] >>= 1;
+            this.pc += 2;
+            break;
+          case 0x0007: // 8XY7
+            const diff2 = this.vRegisters[y] - this.vRegisters[x];
+            this.vRegisters[x] = diff2;
+            this.vRegisters[0xf] = diff2 < 0 ? 0 : 1;
+            this.pc += 2;
+            break;
+          case 0x000e: // 8XYE
+            this.vRegisters[0xf] = this.vRegisters[x] >> 7;
+            this.vRegisters[x] <<= 1;
+            this.pc += 2;
+            break;
+          default:
+            throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
+        }
+        break;
       default:
         throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
     }
