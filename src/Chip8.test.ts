@@ -1,6 +1,5 @@
 import { Chip8 } from "./Chip8";
-
-const generateRom = (...bytes: number[]) => Uint8Array.of(...bytes).buffer;
+import { generateRom } from "./rom-utils";
 
 describe("Chip8", () => {
   let chip: Chip8;
@@ -18,7 +17,7 @@ describe("Chip8", () => {
   });
 
   test("a rom is being loaded to chip memory", () => {
-    chip.loadRom(generateRom(0x00, 0xe0, 0xa2, 0x2a, 0x60, 0x0c, 0x61, 0x08));
+    chip.loadRom(generateRom("00e0 a22a 600c 6108"));
     const view = new DataView(chip.memory);
     expect(view.getUint16(0x200)).toBe(0x00e0);
     expect(view.getUint16(0x202)).toBe(0xa22a);
@@ -28,7 +27,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `ANNN` opcode", () => {
-    chip.loadRom(generateRom(0xa1, 0x23));
+    chip.loadRom(generateRom("a123"));
     expect(chip.pc).toBe(0x200);
     chip.performCycle();
     expect(chip.I).toBe(0x123);
@@ -36,7 +35,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `6XNN` opcode", () => {
-    chip.loadRom(generateRom(0x6c, 0x95));
+    chip.loadRom(generateRom("6c95"));
     expect(chip.vRegisters[0xc]).toBe(0);
     expect(chip.pc).toBe(0x200);
     chip.performCycle();
@@ -45,7 +44,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `7XNN` opcode", () => {
-    chip.loadRom(generateRom(0x62, 0x02, 0x72, 0x05));
+    chip.loadRom(generateRom("6202 7205"));
     expect(chip.vRegisters[2]).toBe(0);
     expect(chip.pc).toBe(0x200);
     chip.performCycle();
@@ -55,7 +54,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `8XY0` opcode", () => {
-    chip.loadRom(generateRom(0x65, 0x1a, 0x86, 0x50));
+    chip.loadRom(generateRom("651a 8650"));
     expect(chip.vRegisters[5]).toBe(0);
     expect(chip.vRegisters[6]).toBe(0);
     expect(chip.pc).toBe(0x200);
@@ -67,7 +66,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `8XY1` opcode", () => {
-    chip.loadRom(generateRom(0x63, 0x05, 0x64, 0x03, 0x83, 0x41));
+    chip.loadRom(generateRom("6305 6403 8341"));
     expect(chip.vRegisters[3]).toBe(0);
     expect(chip.vRegisters[4]).toBe(0);
     expect(chip.pc).toBe(0x200);
@@ -80,7 +79,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `8XY2` opcode", () => {
-    chip.loadRom(generateRom(0x63, 0x05, 0x64, 0x03, 0x83, 0x42));
+    chip.loadRom(generateRom("6305 6403 8342"));
     expect(chip.vRegisters[3]).toBe(0);
     expect(chip.vRegisters[4]).toBe(0);
     expect(chip.pc).toBe(0x200);
@@ -93,7 +92,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `8XY3` opcode", () => {
-    chip.loadRom(generateRom(0x63, 0x05, 0x64, 0x03, 0x83, 0x43));
+    chip.loadRom(generateRom("6305 6403 8343"));
     expect(chip.vRegisters[3]).toBe(0);
     expect(chip.vRegisters[4]).toBe(0);
     expect(chip.pc).toBe(0x200);
@@ -106,7 +105,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `8XY4` opcode", () => {
-    chip.loadRom(generateRom(0x63, 0x05, 0x64, 0x03, 0x83, 0x44));
+    chip.loadRom(generateRom("6305 6403 8344"));
     expect(chip.vRegisters[3]).toBe(0);
     expect(chip.vRegisters[4]).toBe(0);
     expect(chip.pc).toBe(0x200);
@@ -119,7 +118,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `8XY5` opcode", () => {
-    chip.loadRom(generateRom(0x63, 0x05, 0x64, 0x03, 0x83, 0x45));
+    chip.loadRom(generateRom("6305 6403 8345"));
     expect(chip.vRegisters[3]).toBe(0);
     expect(chip.vRegisters[4]).toBe(0);
     expect(chip.pc).toBe(0x200);
@@ -132,7 +131,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `8XY6` opcode", () => {
-    chip.loadRom(generateRom(0x63, 0xb3, 0x83, 0x06));
+    chip.loadRom(generateRom("63b3 8306"));
     expect(chip.vRegisters[3]).toBe(0);
     expect(chip.vRegisters[0xf]).toBe(0);
     expect(chip.pc).toBe(0x200);
@@ -144,7 +143,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `8XY7` opcode", () => {
-    chip.loadRom(generateRom(0x63, 0x05, 0x64, 0x08, 0x83, 0x47));
+    chip.loadRom(generateRom("6305 6408 8347"));
     expect(chip.vRegisters[3]).toBe(0);
     expect(chip.vRegisters[4]).toBe(0);
     expect(chip.pc).toBe(0x200);
@@ -157,7 +156,7 @@ describe("Chip8", () => {
   });
 
   test("chip executes `8XYE` opcode", () => {
-    chip.loadRom(generateRom(0x63, 0x11, 0x83, 0x0e));
+    chip.loadRom(generateRom("6311 830e"));
     expect(chip.vRegisters[3]).toBe(0);
     expect(chip.vRegisters[0xf]).toBe(0);
     expect(chip.pc).toBe(0x200);
