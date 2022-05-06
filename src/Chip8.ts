@@ -26,22 +26,44 @@ export class Chip8 {
   performCycle() {
     const view = new DataView(this.memory);
     const opcode = view.getUint16(this.pc);
+    const x = (opcode & 0x0f00) >> 8;
+    const y = (opcode & 0x00f0) >> 4;
+    const nn = opcode & 0x00ff;
     switch (opcode & 0xf000) {
       case 0xa000:
         this.I = opcode & 0x0fff;
         this.pc += 2;
         break;
+      case 0x3000: // 3XNN
+        if (this.vRegisters[x] === nn) {
+          this.pc += 4;
+        } else {
+          this.pc += 2;
+        }
+        break;
+      case 0x4000: // 4XNN
+        if (this.vRegisters[x] !== nn) {
+          this.pc += 4;
+        } else {
+          this.pc += 2;
+        }
+        break;
+      case 0x5000: // 5XY0
+        if (this.vRegisters[x] === this.vRegisters[y]) {
+          this.pc += 4;
+        } else {
+          this.pc += 2;
+        }
+        break;
       case 0x6000:
-        this.vRegisters[(opcode & 0x0f00) >> 8] = opcode & 0x00ff;
+        this.vRegisters[x] = nn;
         this.pc += 2;
         break;
       case 0x7000:
-        this.vRegisters[(opcode & 0x0f00) >> 8] += opcode & 0x00ff;
+        this.vRegisters[x] += nn;
         this.pc += 2;
         break;
       case 0x8000: // 8XYN
-        const x = (opcode & 0x0f00) >> 8;
-        const y = (opcode & 0x00f0) >> 4;
         switch (opcode & 0x000f) {
           case 0x0000: // 8XY0
             this.vRegisters[x] = this.vRegisters[y];

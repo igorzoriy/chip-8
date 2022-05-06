@@ -34,6 +34,56 @@ describe("Chip8", () => {
     expect(chip.pc).toBe(0x202);
   });
 
+  test("chip executes `3XNN` opcode", () => {
+    chip.loadRom(generateRom("30ff"));
+    chip.vRegisters[0] = 0x11;
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `3XNN` opcode and skips next instruction", () => {
+    chip.loadRom(generateRom("30ff"));
+    chip.vRegisters[0] = 0xff;
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x204);
+  });
+
+  test("chip executes `4XNN` opcode", () => {
+    chip.loadRom(generateRom("40ff"));
+    chip.vRegisters[0] = 0xff;
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `4XNN` opcode and skips next instruction", () => {
+    chip.loadRom(generateRom("40ff"));
+    chip.vRegisters[0] = 0x11;
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x204);
+  });
+
+  test("chip executes `5XY0` opcode", () => {
+    chip.loadRom(generateRom("5af0"));
+    chip.vRegisters[0xa] = 0x35;
+    chip.vRegisters[0xf] = 0x53;
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `5XY0` opcode and skips next instruction", () => {
+    chip.loadRom(generateRom("5af0"));
+    chip.vRegisters[0xa] = 0x35;
+    chip.vRegisters[0xf] = 0x35;
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x204);
+  });
+
   test("chip executes `6XNN` opcode", () => {
     chip.loadRom(generateRom("6c95"));
     expect(chip.vRegisters[0xc]).toBe(0);
