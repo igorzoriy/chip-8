@@ -30,10 +30,6 @@ export class Chip8 {
     const y = (opcode & 0x00f0) >> 4;
     const nn = opcode & 0x00ff;
     switch (opcode & 0xf000) {
-      case 0xa000:
-        this.I = opcode & 0x0fff;
-        this.pc += 2;
-        break;
       case 0x3000: // 3XNN
         if (this.vRegisters[x] === nn) {
           this.pc += 4;
@@ -112,6 +108,17 @@ export class Chip8 {
           default:
             throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
         }
+        break;
+      case 0x9000: // 9XY0
+        if (this.vRegisters[x] !== this.vRegisters[y]) {
+          this.pc += 4;
+        } else {
+          this.pc += 2;
+        }
+        break;
+      case 0xa000:
+        this.I = opcode & 0x0fff;
+        this.pc += 2;
         break;
       default:
         throw new Error(`Unknown opcode: ${opcode.toString(16)}`);

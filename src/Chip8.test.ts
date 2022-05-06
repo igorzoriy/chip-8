@@ -26,14 +26,6 @@ describe("Chip8", () => {
     expect(view.getUint16(0x208)).toBe(0x0000);
   });
 
-  test("chip executes `ANNN` opcode", () => {
-    chip.loadRom(generateRom("a123"));
-    expect(chip.pc).toBe(0x200);
-    chip.performCycle();
-    expect(chip.I).toBe(0x123);
-    expect(chip.pc).toBe(0x202);
-  });
-
   test("chip executes `3XNN` opcode", () => {
     chip.loadRom(generateRom("30ff"));
     chip.vRegisters[0] = 0x11;
@@ -215,5 +207,31 @@ describe("Chip8", () => {
     expect(chip.vRegisters[3]).toBe(0x22);
     expect(chip.vRegisters[0xf]).toBe(0);
     expect(chip.pc).toBe(0x204);
+  });
+
+  test("chip executes `9XY0` opcode", () => {
+    chip.loadRom(generateRom("9140"));
+    chip.vRegisters[1] = 0x01;
+    chip.vRegisters[4] = 0x01;
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `9XY0` opcode and skips next instruction", () => {
+    chip.loadRom(generateRom("9140"));
+    chip.vRegisters[1] = 0x01;
+    chip.vRegisters[4] = 0x02;
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x204);
+  });
+
+  test("chip executes `ANNN` opcode", () => {
+    chip.loadRom(generateRom("a123"));
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.I).toBe(0x123);
+    expect(chip.pc).toBe(0x202);
   });
 });
