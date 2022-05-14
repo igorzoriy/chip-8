@@ -26,6 +26,52 @@ describe("Chip8", () => {
     expect(view.getUint16(0x208)).toBe(0x0000);
   });
 
+  test("chip parses x, y, nn, nnn from opcodes", () => {
+    expect(chip.parseOpcode(0xa64f).nnn).toBe(0x64f);
+
+    expect(chip.parseOpcode(0x42dd).x).toBe(2);
+    expect(chip.parseOpcode(0x42dd).nn).toBe(0xdd);
+
+    expect(chip.parseOpcode(0x58f0).x).toBe(8);
+    expect(chip.parseOpcode(0x58f0).y).toBe(0xf);
+  });
+
+  test.only("chip executes `00EE` opcode", () => {
+    chip.loadRom(generateRom("2202 2204 00EE 00EE"));
+    chip.performCycle();
+    chip.performCycle();
+    chip.performCycle();
+    expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `00EE` opcode and throws an exception when stack is underflow", () => {
+    chip.loadRom(generateRom("00EE"));
+    expect(() => chip.performCycle()).toThrowError("Stack underflow");
+  });
+
+  test("chip executes `2NNN` opcode", () => {
+    chip.loadRom(generateRom("24FF"));
+    expect(chip.pc).toBe(0x200);
+    expect(chip.sp).toBe(0);
+    expect(chip.stack[0]).toBe(0);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x4ff);
+    expect(chip.sp).toBe(1);
+    expect(chip.stack[0]).toBe(0x200);
+  });
+
+  test("chip executes `2NNN` opcode and throws an exception when stack is overflow", () => {
+    chip.loadRom(
+      generateRom(
+        "2202 2204 2206 2208 220A 220C 220E 2210 2212 2214 2216 2218 221A 221C 221E 2220"
+      )
+    );
+    for (let i = 0; i < 15; i++) {
+      chip.performCycle();
+    }
+    expect(() => chip.performCycle()).toThrowError("Stack overflow");
+  });
+
   test("chip executes `3XNN` opcode", () => {
     chip.loadRom(generateRom("30ff"));
     chip.vRegisters[0] = 0x11;
