@@ -153,6 +153,9 @@ export class Chip8 {
         this.I = opcode & 0x0fff;
         this.pc += 2;
         break;
+      case 0xb000: // BNNN
+        this.pc = nnn + this.vRegisters[0];
+        break;
       default:
         throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
     }

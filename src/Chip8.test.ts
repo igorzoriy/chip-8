@@ -287,4 +287,11 @@ describe("Chip8", () => {
     expect(chip.I).toBe(0x123);
     expect(chip.pc).toBe(0x202);
   });
+
+  test("chip executes `BNNN` opcode", () => {
+    chip.loadRom(generateRom("6010 b0ff"));
+    chip.performCycle();
+    chip.performCycle();
+    expect(chip.pc).toBe(0x010f);
+  });
 });
