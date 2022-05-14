@@ -36,7 +36,7 @@ describe("Chip8", () => {
     expect(chip.parseOpcode(0x58f0).y).toBe(0xf);
   });
 
-  test.only("chip executes `00EE` opcode", () => {
+  test("chip executes `00EE` opcode", () => {
     chip.loadRom(generateRom("2202 2204 00EE 00EE"));
     chip.performCycle();
     chip.performCycle();
@@ -47,6 +47,13 @@ describe("Chip8", () => {
   test("chip executes `00EE` opcode and throws an exception when stack is underflow", () => {
     chip.loadRom(generateRom("00EE"));
     expect(() => chip.performCycle()).toThrowError("Stack underflow");
+  });
+
+  test("chip executes `1NNN` opcode", () => {
+    chip.loadRom(generateRom("12ff"));
+    expect(chip.pc).toBe(0x200);
+    chip.performCycle();
+    expect(chip.pc).toBe(0x2ff);
   });
 
   test("chip executes `2NNN` opcode", () => {

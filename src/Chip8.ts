@@ -52,6 +52,9 @@ export class Chip8 {
           throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
         }
         break;
+      case 0x1000: // 1NNN
+        this.pc = nnn;
+        break;
       case 0x2000: // 2NNN
         if (this.sp >= 15) {
           throw new Error("Stack overflow");
