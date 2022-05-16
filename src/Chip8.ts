@@ -168,6 +168,17 @@ export class Chip8 {
         this.vRegisters[x] = Math.floor(Math.random() * 255) & nn;
         this.nextInstruction();
         break;
+
+      case 0xf000:
+        switch (nn) {
+          case 0x1e: // FX1E
+            this.I += this.vRegisters[x];
+            this.nextInstruction();
+            break;
+          default:
+            throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
+        }
+        break;
       default:
         throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
     }

@@ -261,4 +261,13 @@ describe("Chip8", () => {
     chip.performCycle();
     expect(chip.pc).toBe(0x010f);
   });
+
+  test("chip executes `FX1E` opcode", () => {
+    chip.loadRom(generateRom("f11e"));
+    chip.I = 0x100;
+    chip.vRegisters[1] = 0x34;
+    chip.performCycle();
+    expect(chip.I).toBe(0x134);
+    expect(chip.pc).toBe(0x202);
+  });
 });
