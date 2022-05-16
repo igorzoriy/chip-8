@@ -164,6 +164,10 @@ export class Chip8 {
       case 0xb000: // BNNN
         this.pc = nnn + this.vRegisters[0];
         break;
+      case 0xc000: // CXNN
+        this.vRegisters[x] = Math.floor(Math.random() * 255) & nn;
+        this.nextInstruction();
+        break;
       default:
         throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
     }
