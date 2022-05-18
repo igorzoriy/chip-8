@@ -1,18 +1,16 @@
 export class Chip8 {
-  memory: ArrayBuffer = new ArrayBuffer(0);
-  opcode: number = 0;
-  I: number = 0;
-  pc: number = 0;
-  vRegisters: Uint8Array = new Uint8Array(0);
-  sp: number = 0;
-  stack: Uint16Array = new Uint16Array(0);
+  memoryBuffer: ArrayBuffer;
+  memory: DataView;
+  opcode: number;
+  I: number;
+  pc: number;
+  vRegisters: Uint8Array;
+  sp: number;
+  stack: Uint16Array;
 
   constructor() {
-    this.initialize();
-  }
-
-  initialize() {
-    this.memory = new ArrayBuffer(0x1000);
+    this.memoryBuffer = new ArrayBuffer(0x1000);
+    this.memory = new DataView(this.memoryBuffer);
     this.opcode = 0;
     this.I = 0;
     this.pc = 0x200;
@@ -22,9 +20,8 @@ export class Chip8 {
   }
 
   loadRom(rom: ArrayBuffer) {
-    const memoryArray = new Uint8Array(this.memory);
-    const romArray = new Uint8Array(rom);
-    memoryArray.set(romArray, 0x200);
+    const memory = new Uint8Array(this.memoryBuffer);
+    memory.set(new Uint8Array(rom), 0x200);
   }
 
   parseOpcode(opcode: number) {
@@ -44,8 +41,7 @@ export class Chip8 {
   }
 
   performCycle() {
-    const view = new DataView(this.memory);
-    const opcode = view.getUint16(this.pc);
+    const opcode = this.memory.getUint16(this.pc);
     const { x, y, nn, nnn } = this.parseOpcode(opcode);
     switch (opcode & 0xf000) {
       case 0x0000:

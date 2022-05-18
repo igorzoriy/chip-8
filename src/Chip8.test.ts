@@ -24,12 +24,12 @@ describe("Chip8", () => {
 
   test("a rom is being loaded to chip memory", () => {
     chip.loadRom(generateRom("00e0 a22a 600c 6108"));
-    const view = new DataView(chip.memory);
-    expect(view.getUint16(0x200)).toBe(0x00e0);
-    expect(view.getUint16(0x202)).toBe(0xa22a);
-    expect(view.getUint16(0x204)).toBe(0x600c);
-    expect(view.getUint16(0x206)).toBe(0x6108);
-    expect(view.getUint16(0x208)).toBe(0x0000);
+    const { memory } = chip;
+    expect(memory.getUint16(0x200)).toBe(0x00e0);
+    expect(memory.getUint16(0x202)).toBe(0xa22a);
+    expect(memory.getUint16(0x204)).toBe(0x600c);
+    expect(memory.getUint16(0x206)).toBe(0x6108);
+    expect(memory.getUint16(0x208)).toBe(0x0000);
   });
 
   test("chip parses x, y, nn, nnn from opcodes", () => {
