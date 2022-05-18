@@ -171,6 +171,12 @@ export class Chip8 {
             this.I += this.vRegisters[x];
             this.nextInstruction();
             break;
+          case 0x33: // FX33
+            this.memory.setUint8(this.I, Math.floor(this.vRegisters[x] / 100));
+            this.memory.setUint8(this.I + 1, (this.vRegisters[x] / 10) % 10);
+            this.memory.setUint8(this.I + 2, this.vRegisters[x] % 10);
+            this.nextInstruction();
+            break;
           default:
             throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
         }

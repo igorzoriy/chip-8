@@ -270,4 +270,28 @@ describe("Chip8", () => {
     expect(chip.I).toBe(0x134);
     expect(chip.pc).toBe(0x202);
   });
+
+  test.each([
+    ["f033", 0, 0, 0, 0, 0],
+    ["f133", 1, 9, 0, 0, 9],
+    ["f233", 2, 10, 0, 1, 0],
+    ["f333", 3, 99, 0, 9, 9],
+    ["f433", 4, 100, 1, 0, 0],
+    ["f533", 5, 199, 1, 9, 9],
+    ["f633", 6, 200, 2, 0, 0],
+    ["f733", 7, 255, 2, 5, 5],
+  ])(
+    "chip executes `FX33` opcode: %s",
+    (opcode, rIndex, rValue, i0, i1, i2) => {
+      chip.loadRom(generateRom(opcode));
+      chip.I = 0x100;
+      chip.vRegisters[rIndex] = rValue;
+      chip.performCycle();
+      const { memory } = chip;
+      expect(memory.getUint8(0x100)).toBe(i0);
+      expect(memory.getUint8(0x101)).toBe(i1);
+      expect(memory.getUint8(0x102)).toBe(i2);
+      expect(chip.pc).toBe(0x202);
+    }
+  );
 });
