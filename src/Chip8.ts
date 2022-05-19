@@ -1,4 +1,5 @@
 export class Chip8 {
+  memorySize = 0x1000;
   memoryBuffer: ArrayBuffer;
   memory: DataView;
   opcode: number;
@@ -9,7 +10,7 @@ export class Chip8 {
   stack: Uint16Array;
 
   constructor() {
-    this.memoryBuffer = new ArrayBuffer(0x1000);
+    this.memoryBuffer = new ArrayBuffer(this.memorySize);
     this.memory = new DataView(this.memoryBuffer);
     this.opcode = 0;
     this.I = 0;
@@ -175,6 +176,18 @@ export class Chip8 {
             this.memory.setUint8(this.I, Math.floor(this.vRegisters[x] / 100));
             this.memory.setUint8(this.I + 1, (this.vRegisters[x] / 10) % 10);
             this.memory.setUint8(this.I + 2, this.vRegisters[x] % 10);
+            this.nextInstruction();
+            break;
+          case 0x55: // FX55
+            for (let i = 0; i <= x; i++) {
+              this.memory.setUint8(this.I + i, this.vRegisters[i]);
+            }
+            this.nextInstruction();
+            break;
+          case 0x65: // FX65
+            for (let i = 0; i <= x; i++) {
+              this.vRegisters[i] = this.memory.getUint8(this.I + i);
+            }
             this.nextInstruction();
             break;
           default:
