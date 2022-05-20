@@ -42,6 +42,18 @@ describe("Chip8", () => {
     expect(chip.parseOpcode(0x58f0).y).toBe(0xf);
   });
 
+  test("chip ticks delay timer", () => {
+    chip.delayTimer = 3;
+    chip.tickDelayTimer();
+    expect(chip.delayTimer).toBe(2);
+    chip.tickDelayTimer();
+    expect(chip.delayTimer).toBe(1);
+    chip.tickDelayTimer();
+    expect(chip.delayTimer).toBe(0);
+    chip.tickDelayTimer();
+    expect(chip.delayTimer).toBe(0);
+  });
+
   test("chip executes `00EE` opcode", () => {
     chip.loadRom(generateRom("00EE 00EE"));
     chip.stack[0] = 0x400;
@@ -260,6 +272,22 @@ describe("Chip8", () => {
     chip.vRegisters[0] = 0x10;
     chip.performCycle();
     expect(chip.pc).toBe(0x010f);
+  });
+
+  test("chip executes `FX07` opcode", () => {
+    chip.loadRom(generateRom("f407"));
+    chip.delayTimer = 0x3c;
+    chip.performCycle();
+    expect(chip.vRegisters[4]).toBe(0x3c);
+    expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `FX15` opcode", () => {
+    chip.loadRom(generateRom("f515"));
+    chip.vRegisters[5] = 0xb1;
+    chip.performCycle();
+    expect(chip.delayTimer).toBe(0xb1);
+    expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `FX1E` opcode", () => {

@@ -8,6 +8,7 @@ export class Chip8 {
   vRegisters: Uint8Array;
   sp: number;
   stack: Uint16Array;
+  delayTimer: number;
 
   constructor() {
     this.memoryBuffer = new ArrayBuffer(this.memorySize);
@@ -18,6 +19,7 @@ export class Chip8 {
     this.vRegisters = new Uint8Array(16);
     this.sp = 0;
     this.stack = new Uint16Array(16);
+    this.delayTimer = 0;
   }
 
   loadRom(rom: ArrayBuffer) {
@@ -56,6 +58,12 @@ export class Chip8 {
     this.stack[this.sp] = this.pc;
     this.pc = address;
     this.sp++;
+  }
+
+  tickDelayTimer() {
+    if (this.delayTimer > 0) {
+      this.delayTimer--;
+    }
   }
 
   performCycle() {
@@ -176,6 +184,14 @@ export class Chip8 {
 
       case 0xf000:
         switch (nn) {
+          case 0x07: // FX07 - LD Vx, DT
+            this.vRegisters[x] = this.delayTimer;
+            this.nextInstruction();
+            break;
+          case 0x15: // FX15 - LD DT, Vx
+            this.delayTimer = this.vRegisters[x];
+            this.nextInstruction();
+            break;
           case 0x1e: // FX1E - ADD I, Vx
             this.I += this.vRegisters[x];
             this.nextInstruction();
