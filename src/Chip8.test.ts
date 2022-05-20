@@ -20,6 +20,8 @@ describe("Chip8", () => {
     for (let i = 0; i < 16; i++) {
       expect(chip.stack[i]).toBe(0);
     }
+    expect(chip.delayTimer).toBe(0);
+    expect(chip.soundTimer).toBe(0);
   });
 
   test("a rom is being loaded to chip memory", () => {
@@ -42,16 +44,27 @@ describe("Chip8", () => {
     expect(chip.parseOpcode(0x58f0).y).toBe(0xf);
   });
 
-  test("chip ticks delay timer", () => {
+  test("chip ticks", () => {
     chip.delayTimer = 3;
-    chip.tickDelayTimer();
+    chip.soundTimer = 5;
+    chip.tick();
     expect(chip.delayTimer).toBe(2);
-    chip.tickDelayTimer();
+    expect(chip.soundTimer).toBe(4);
+    chip.tick();
     expect(chip.delayTimer).toBe(1);
-    chip.tickDelayTimer();
+    expect(chip.soundTimer).toBe(3);
+    chip.tick();
     expect(chip.delayTimer).toBe(0);
-    chip.tickDelayTimer();
+    expect(chip.soundTimer).toBe(2);
+    chip.tick();
     expect(chip.delayTimer).toBe(0);
+    expect(chip.soundTimer).toBe(1);
+    chip.tick();
+    expect(chip.delayTimer).toBe(0);
+    expect(chip.soundTimer).toBe(0);
+    chip.tick();
+    expect(chip.delayTimer).toBe(0);
+    expect(chip.soundTimer).toBe(0);
   });
 
   test("chip executes `00EE` opcode", () => {
@@ -287,6 +300,14 @@ describe("Chip8", () => {
     chip.vRegisters[5] = 0xb1;
     chip.performCycle();
     expect(chip.delayTimer).toBe(0xb1);
+    expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `FX18` opcode", () => {
+    chip.loadRom(generateRom("f018"));
+    chip.vRegisters[0] = 0x11;
+    chip.performCycle();
+    expect(chip.soundTimer).toBe(0x11);
     expect(chip.pc).toBe(0x202);
   });
 

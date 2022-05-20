@@ -9,6 +9,7 @@ export class Chip8 {
   sp: number;
   stack: Uint16Array;
   delayTimer: number;
+  soundTimer: number;
 
   constructor() {
     this.memoryBuffer = new ArrayBuffer(this.memorySize);
@@ -20,6 +21,7 @@ export class Chip8 {
     this.sp = 0;
     this.stack = new Uint16Array(16);
     this.delayTimer = 0;
+    this.soundTimer = 0;
   }
 
   loadRom(rom: ArrayBuffer) {
@@ -60,9 +62,13 @@ export class Chip8 {
     this.sp++;
   }
 
-  tickDelayTimer() {
+  tick() {
     if (this.delayTimer > 0) {
       this.delayTimer--;
+    }
+
+    if (this.soundTimer > 0) {
+      this.soundTimer--;
     }
   }
 
@@ -190,6 +196,10 @@ export class Chip8 {
             break;
           case 0x15: // FX15 - LD DT, Vx
             this.delayTimer = this.vRegisters[x];
+            this.nextInstruction();
+            break;
+          case 0x18: // FX18 - LD ST, Vx
+            this.soundTimer = this.vRegisters[x];
             this.nextInstruction();
             break;
           case 0x1e: // FX1E - ADD I, Vx
