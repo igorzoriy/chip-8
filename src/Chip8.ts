@@ -197,6 +197,21 @@ export class Chip8 {
         this.vRegisters[x] = Math.floor(Math.random() * 255) & nn;
         this.nextInstruction();
         break;
+      case 0xd000: // DXYN - DRW Vx, Vy, nibble
+        const n = opcode & 0x000f;
+        const sprite = new Uint8Array(n);
+        for (let i = 0; i < n; i++) {
+          sprite[i] = this.memory.getUint8(this.I + i);
+        }
+        this.vRegisters[0xf] = Number(
+          this.display.drawSprite(
+            this.vRegisters[x],
+            this.vRegisters[y],
+            sprite
+          )
+        );
+        this.nextInstruction();
+        break;
 
       case 0xf000:
         switch (nn) {

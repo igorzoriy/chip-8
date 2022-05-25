@@ -296,6 +296,22 @@ describe("Chip8", () => {
     expect(chip.pc).toBe(0x010f);
   });
 
+  test("chip executes `DXYN` opcode", () => {
+    chip.loadRom(generateRom("d122"));
+    chip.vRegisters[1] = 0x01;
+    chip.vRegisters[2] = 0x02;
+    chip.I = 0x500;
+    chip.memory.setUint8(0x500, 0xf1);
+    chip.memory.setUint8(0x501, 0xa4);
+    chip.performCycle();
+    expect(drawSprite).toHaveBeenCalledWith(
+      0x01,
+      0x02,
+      new Uint8Array([0xf1, 0xa4])
+    );
+    expect(chip.pc).toBe(0x202);
+  });
+
   test("chip executes `FX07` opcode", () => {
     chip.loadRom(generateRom("f407"));
     chip.delayTimer = 0x3c;
