@@ -1,3 +1,5 @@
+import { IDisplay } from "./Display";
+
 export class Chip8 {
   memorySize = 0x1000;
   memoryBuffer: ArrayBuffer;
@@ -11,7 +13,9 @@ export class Chip8 {
   delayTimer: number;
   soundTimer: number;
 
-  constructor() {
+  display: IDisplay;
+
+  constructor(display: IDisplay) {
     this.memoryBuffer = new ArrayBuffer(this.memorySize);
     this.memory = new DataView(this.memoryBuffer);
     this.opcode = 0;
@@ -22,6 +26,8 @@ export class Chip8 {
     this.stack = new Uint16Array(16);
     this.delayTimer = 0;
     this.soundTimer = 0;
+
+    this.display = display;
   }
 
   loadRom(rom: ArrayBuffer) {
@@ -77,8 +83,12 @@ export class Chip8 {
     const { x, y, nn, nnn } = this.parseOpcode(opcode);
     switch (opcode & 0xf000) {
       case 0x0000:
-        // 00EE - RET
-        if (nnn === 0x0ee) {
+        if (nnn === 0x0e0) {
+          // 00E0 - CLS
+          this.display.clear();
+          this.nextInstruction();
+        } else if (nnn === 0x0ee) {
+          // 00EE - RET
           this.returnFromSubroutine();
         } else {
           throw new Error(`Unknown opcode: ${opcode.toString(16)}`);

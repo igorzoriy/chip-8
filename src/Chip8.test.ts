@@ -3,9 +3,11 @@ import { generateRom } from "./rom-utils";
 
 describe("Chip8", () => {
   let chip: Chip8;
+  let clear = jest.fn();
+  let drawSprite = jest.fn();
 
   beforeEach(() => {
-    chip = new Chip8();
+    chip = new Chip8({ clear, drawSprite });
   });
 
   test("chip is initialized after creating", () => {
@@ -65,6 +67,13 @@ describe("Chip8", () => {
     chip.tick();
     expect(chip.delayTimer).toBe(0);
     expect(chip.soundTimer).toBe(0);
+  });
+
+  test("chip executes `00E0` opcode", () => {
+    chip.loadRom(generateRom("00E0"));
+    chip.performCycle();
+    expect(clear).toHaveBeenCalled();
+    expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `00EE` opcode", () => {

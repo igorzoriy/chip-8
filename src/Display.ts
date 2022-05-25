@@ -1,4 +1,9 @@
-export class Display {
+export interface IDisplay {
+  clear(): void;
+  drawSprite(x: number, y: number, sprite: Uint8Array): boolean;
+}
+
+export class Display implements IDisplay {
   static width = 64;
   static height = 32;
   byteCanvas!: Uint8Array;
