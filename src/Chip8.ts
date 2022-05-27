@@ -1,4 +1,5 @@
 import { IDisplay } from "./Display";
+import { font } from "./font";
 
 export class Chip8 {
   memorySize = 0x1000;
@@ -28,11 +29,15 @@ export class Chip8 {
     this.soundTimer = 0;
 
     this.display = display;
+    this.loadFont();
+  }
+
+  loadFont() {
+    new Uint8Array(this.memoryBuffer).set(new Uint8Array(font), 0);
   }
 
   loadRom(rom: ArrayBuffer) {
-    const memory = new Uint8Array(this.memoryBuffer);
-    memory.set(new Uint8Array(rom), 0x200);
+    new Uint8Array(this.memoryBuffer).set(new Uint8Array(rom), 0x200);
   }
 
   parseOpcode(opcode: number) {
@@ -229,6 +234,13 @@ export class Chip8 {
             break;
           case 0x1e: // FX1E - ADD I, Vx
             this.I += this.vRegisters[x];
+            this.nextInstruction();
+            break;
+          case 0x29: // FX29 - LD F, Vx
+            if (this.vRegisters[x] > 0xf) {
+              throw new Error(`Invalid font sprite: ${this.vRegisters[x]}`);
+            }
+            this.I = this.vRegisters[x] * 5;
             this.nextInstruction();
             break;
           case 0x33: // FX33 - LD B, Vx

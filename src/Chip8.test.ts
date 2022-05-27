@@ -24,6 +24,9 @@ describe("Chip8", () => {
     }
     expect(chip.delayTimer).toBe(0);
     expect(chip.soundTimer).toBe(0);
+    expect(chip.memory.getUint8(0)).toBe(0xf0);
+    expect(chip.memory.getUint8(0x4f)).toBe(0x80);
+    expect(chip.memory.getUint8(0x50)).toBe(0);
   });
 
   test("a rom is being loaded to chip memory", () => {
@@ -342,6 +345,14 @@ describe("Chip8", () => {
     chip.vRegisters[1] = 0x34;
     chip.performCycle();
     expect(chip.I).toBe(0x134);
+    expect(chip.pc).toBe(0x202);
+  });
+
+  test("chip executes `FX29` opcode", () => {
+    chip.loadRom(generateRom("f129"));
+    chip.vRegisters[1] = 0xe;
+    chip.performCycle();
+    expect(chip.I).toBe(0x46);
     expect(chip.pc).toBe(0x202);
   });
 
