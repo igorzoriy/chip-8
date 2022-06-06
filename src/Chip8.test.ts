@@ -3,8 +3,8 @@ import { generateRom } from "./rom-utils";
 
 describe("Chip8", () => {
   let chip: Chip8;
-  let clear = jest.fn();
-  let drawSprite = jest.fn();
+  const clear = jest.fn();
+  const drawSprite = jest.fn();
 
   beforeEach(() => {
     chip = new Chip8({ clear, drawSprite });

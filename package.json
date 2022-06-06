@@ -6,6 +6,7 @@
   "scripts": {
     "start": "webpack serve",
     "build": "webpack",
+    "lint": "eslint .",
     "test": "jest src --coverage",
     "test:watch": "jest --watch src"
   },
@@ -26,6 +27,10 @@
   "homepage": "https://github.com/igorzoriy/chip-8#readme",
   "devDependencies": {
     "@types/jest": "^27.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.3",

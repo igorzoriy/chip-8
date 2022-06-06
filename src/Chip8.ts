@@ -86,6 +86,7 @@ export class Chip8 {
   performCycle() {
     const opcode = this.memory.getUint16(this.pc);
     const { x, y, nn, nnn } = this.parseOpcode(opcode);
+    /* eslint-disable no-case-declarations */
     switch (opcode & 0xf000) {
       case 0x0000:
         if (nnn === 0x0e0) {
@@ -267,6 +268,7 @@ export class Chip8 {
         break;
       default:
         throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
+      /* eslint-enable no-case-declarations */
     }
   }
 }
