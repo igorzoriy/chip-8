@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
 import { Chip8 } from "./Chip8";
 import { Display } from "./Display";
@@ -43,10 +43,8 @@ export class App extends LitElement {
 
   render() {
     return html`
-      <div>
-        <h1>Load the rom</h1>
-        <input type="file" @change="${this.handleChange}" />
-      </div>
+      <h1>CHIP-8 TypeScript</h1>
+      <input type="file" @change="${this.handleChange}" />
     `;
   }
 }

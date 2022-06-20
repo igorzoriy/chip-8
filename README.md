@@ -1,6 +1,6 @@
 # chip-8
 
-Yet Another CHIP-8 Emulator
+Yet another [CHIP-8](https://en.wikipedia.org/wiki/CHIP-8) interpreter written in TypeScript
 
 ## Documentation
 

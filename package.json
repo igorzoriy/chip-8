@@ -1,7 +1,7 @@
 {
   "name": "chip-8",
   "version": "1.0.0",
-  "description": "Yet another CHIP-8 emulator",
+  "description": "Yet another CHIP-8 interpreter written in TypeScript",
   "private": true,
   "scripts": {
     "start": "webpack serve",
@@ -17,7 +17,8 @@
   "keywords": [
     "chip-8",
     "chip8",
-    "emulator"
+    "emulator",
+    "interpreter"
   ],
   "author": "Igor Zoriy",
   "license": "UNLICENSED",
@@ -25,7 +26,7 @@
     "url": "https://github.com/igorzoriy/chip-8/issues"
   },
   "homepage": "https://github.com/igorzoriy/chip-8#readme",
-    "dependencies": {
+  "dependencies": {
     "lit": "^2.2.6"
   },
   "devDependencies": {
