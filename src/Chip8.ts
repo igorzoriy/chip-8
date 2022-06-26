@@ -271,4 +271,12 @@ export class Chip8 {
       /* eslint-enable no-case-declarations */
     }
   }
+
+  getInfo(): {
+    vRegisters: number[];
+  } {
+    return {
+      vRegisters: [...this.vRegisters],
+    };
+  }
 }
