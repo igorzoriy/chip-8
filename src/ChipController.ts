@@ -1,17 +1,15 @@
 import { ReactiveController, ReactiveControllerHost } from "lit";
-import { Chip8 } from "./Chip8";
-import { Display } from "./Display";
+import { Chip8, DISPLAY_WIDTH, DISPLAY_HEIGHT } from "./Chip8";
+import { dumpVram } from "./rom-utils";
 
 export class ChipController implements ReactiveController {
   host: ReactiveControllerHost;
-  display: Display;
   chip: Chip8;
   private timer?: ReturnType<typeof setInterval>;
 
   constructor(host: ReactiveControllerHost) {
     (this.host = host).addController(this);
-    this.display = new Display();
-    this.chip = new Chip8(this.display);
+    this.chip = new Chip8();
   }
 
   loadRom(buffer: ArrayBuffer) {
@@ -21,7 +19,7 @@ export class ChipController implements ReactiveController {
   run() {
     this.timer = setInterval(() => {
       this.chip.performCycle();
-      this.display.dump();
+      dumpVram(this.chip.vram, DISPLAY_WIDTH, DISPLAY_HEIGHT);
       this.host.requestUpdate();
     }, 300);
   }

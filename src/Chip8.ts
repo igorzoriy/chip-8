@@ -1,8 +1,10 @@
-import { IDisplay } from "./Display";
 import { font } from "./font";
 
+export const MEMORY_SIZE = 0x1000;
+export const DISPLAY_WIDTH = 64;
+export const DISPLAY_HEIGHT = 32;
+
 export class Chip8 {
-  memorySize = 0x1000;
   memoryBuffer: ArrayBuffer;
   memory: DataView;
   opcode: number;
@@ -13,11 +15,10 @@ export class Chip8 {
   stack: Uint16Array;
   delayTimer: number;
   soundTimer: number;
+  vram: Uint8Array;
 
-  display: IDisplay;
-
-  constructor(display: IDisplay) {
-    this.memoryBuffer = new ArrayBuffer(this.memorySize);
+  constructor() {
+    this.memoryBuffer = new ArrayBuffer(MEMORY_SIZE);
     this.memory = new DataView(this.memoryBuffer);
     this.opcode = 0;
     this.I = 0;
@@ -27,8 +28,7 @@ export class Chip8 {
     this.stack = new Uint16Array(16);
     this.delayTimer = 0;
     this.soundTimer = 0;
-
-    this.display = display;
+    this.vram = new Uint8Array(DISPLAY_WIDTH * DISPLAY_HEIGHT);
     this.loadFont();
   }
 
@@ -38,6 +38,29 @@ export class Chip8 {
 
   loadRom(rom: ArrayBuffer) {
     new Uint8Array(this.memoryBuffer).set(new Uint8Array(rom), 0x200);
+  }
+
+  private clearVram() {
+    this.vram = new Uint8Array(DISPLAY_WIDTH * DISPLAY_HEIGHT);
+  }
+
+  private drawSprite(x: number, y: number, n: number) {
+    let erased = false;
+    for (let yy = 0; yy < n; yy++) {
+      const byte = this.memory.getUint8(this.I + yy);
+      for (let xx = 0; xx < 8; xx++) {
+        const bit = byte & (1 << (7 - xx));
+        if (bit) {
+          const dx = x + xx >= DISPLAY_WIDTH ? x + xx - DISPLAY_WIDTH : x + xx;
+          const dy =
+            y + yy >= DISPLAY_HEIGHT ? y + yy - DISPLAY_HEIGHT : y + yy;
+          const i = dx + dy * DISPLAY_WIDTH;
+          erased = erased || this.vram[i] === 1;
+          this.vram[i] ^= 1;
+        }
+      }
+    }
+    this.vRegisters[0xf] = Number(erased);
   }
 
   parseOpcode(opcode: number) {
@@ -91,7 +114,7 @@ export class Chip8 {
       case 0x0000:
         if (nnn === 0x0e0) {
           // 00E0 - CLS
-          this.display.clear();
+          this.clearVram();
           this.nextInstruction();
         } else if (nnn === 0x0ee) {
           // 00EE - RET
@@ -205,17 +228,7 @@ export class Chip8 {
         break;
       case 0xd000: // DXYN - DRW Vx, Vy, nibble
         const n = opcode & 0x000f;
-        const sprite = new Uint8Array(n);
-        for (let i = 0; i < n; i++) {
-          sprite[i] = this.memory.getUint8(this.I + i);
-        }
-        this.vRegisters[0xf] = Number(
-          this.display.drawSprite(
-            this.vRegisters[x],
-            this.vRegisters[y],
-            sprite
-          )
-        );
+        this.drawSprite(this.vRegisters[x], this.vRegisters[y], n);
         this.nextInstruction();
         break;
 

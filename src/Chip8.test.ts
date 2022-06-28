@@ -1,13 +1,11 @@
-import { Chip8 } from "./Chip8";
+import { Chip8, DISPLAY_WIDTH, DISPLAY_HEIGHT } from "./Chip8";
 import { generateRom } from "./rom-utils";
 
 describe("Chip8", () => {
   let chip: Chip8;
-  const clear = jest.fn();
-  const drawSprite = jest.fn();
 
   beforeEach(() => {
-    chip = new Chip8({ clear, drawSprite });
+    chip = new Chip8();
   });
 
   test("chip is initialized after creating", () => {
@@ -27,6 +25,7 @@ describe("Chip8", () => {
     expect(chip.memory.getUint8(0)).toBe(0xf0);
     expect(chip.memory.getUint8(0x4f)).toBe(0x80);
     expect(chip.memory.getUint8(0x50)).toBe(0);
+    expect(chip.vram).toEqual(new Uint8Array(DISPLAY_WIDTH * DISPLAY_HEIGHT));
   });
 
   test("a rom is being loaded to chip memory", () => {
@@ -73,9 +72,10 @@ describe("Chip8", () => {
   });
 
   test("chip executes `00E0` opcode", () => {
+    chip.vram[0] = 1;
     chip.loadRom(generateRom("00E0"));
     chip.performCycle();
-    expect(clear).toHaveBeenCalled();
+    expect(chip.vram).toEqual(new Uint8Array(DISPLAY_WIDTH * DISPLAY_HEIGHT));
     expect(chip.pc).toBe(0x202);
   });
 
@@ -299,21 +299,49 @@ describe("Chip8", () => {
     expect(chip.pc).toBe(0x010f);
   });
 
-  test("chip executes `DXYN` opcode", () => {
-    chip.loadRom(generateRom("d122"));
-    chip.vRegisters[1] = 0x01;
-    chip.vRegisters[2] = 0x02;
-    chip.I = 0x500;
-    chip.memory.setUint8(0x500, 0xf1);
-    chip.memory.setUint8(0x501, 0xa4);
-    chip.performCycle();
-    expect(drawSprite).toHaveBeenCalledWith(
-      0x01,
-      0x02,
-      new Uint8Array([0xf1, 0xa4])
-    );
-    expect(chip.pc).toBe(0x202);
-  });
+  test.each([
+    [
+      "d015",
+      0,
+      1,
+      [0x88, 0x50, 0x20, 0x50, 0x88],
+      [0, 64, 68, 129, 131, 194, 257, 259, 320, 324],
+      0,
+    ],
+    ["d012", 0, 0, [0xf0, 0xa0], [1, 2, 3, 64, 66], 1],
+    ["d013", 62, 30, [0xe0, 0x40, 0xe0], [62, 63, 1920, 1982, 1983, 2047], 1],
+  ])(
+    "chip executes `DXYN` opcode: %#",
+    (
+      opcode: string,
+      x: number,
+      y: number,
+      sprite: number[],
+      filledPixels: number[],
+      erased: number
+    ) => {
+      chip.loadRom(generateRom(opcode));
+      chip.vram[0] = 1; // fill top left pixel
+      chip.vRegisters[0] = x;
+      chip.vRegisters[1] = y;
+      chip.I = 0x500;
+      for (let i = 0; i < sprite.length; i++) {
+        chip.memory.setUint8(chip.I + i, sprite[i]);
+      }
+
+      chip.performCycle();
+
+      for (let i = 0; i < chip.vram.length; i++) {
+        if (filledPixels.includes(i)) {
+          expect(chip.vram[i]).toBe(1);
+        } else {
+          expect(chip.vram[i]).toBe(0);
+        }
+      }
+      expect(chip.vRegisters[0xf]).toBe(erased);
+      expect(chip.pc).toBe(0x202);
+    }
+  );
 
   test("chip executes `FX07` opcode", () => {
     chip.loadRom(generateRom("f407"));
