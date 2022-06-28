@@ -66,10 +66,18 @@ export class App extends LitElement {
       .button:hover {
         color: var(--secondary-color);
       }
+
+      .file-input {
+        display: none;
+      }
     `,
   ];
 
   private ctrl = new ChipController(this);
+
+  handleLoadClick() {
+    (this.renderRoot.querySelector(".file-input") as HTMLInputElement)?.click();
+  }
 
   async handleChange(e: Event) {
     const target = e.target as HTMLInputElement;
@@ -94,8 +102,10 @@ export class App extends LitElement {
       <h1 class="app-header">CHIP-8 TypeScript</h1>
       <section class="controls">
         <h2 class="subheader">Controls</h2>
-        <button class="button">load rom</button>
-        <input type="file" @change="${this.handleChange}" />
+        <button class="button" @click="${this.handleLoadClick}">
+          load rom
+        </button>
+        <input class="file-input" type="file" @change="${this.handleChange}" />
         <button class="button">reset</button>
         <button class="button">play/pause</button>
         <button class="button">mute/unmute</button>

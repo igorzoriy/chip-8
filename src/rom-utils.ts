@@ -26,3 +26,14 @@ export const generateRom = (chars: string): ArrayBuffer => {
 
   return Uint8Array.from(bytes).buffer;
 };
+
+export const dumpVram = (vram: Uint8Array, width: number, heigth: number) => {
+  let dump = "";
+  for (let y = 0; y < heigth; y++) {
+    for (let x = 0; x < width; x++) {
+      dump += vram[x + y * width] ? "X" : "-";
+    }
+    dump += "\n";
+  }
+  console.log(dump);
+};
