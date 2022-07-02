@@ -10,7 +10,7 @@ export class Chip8 {
   opcode: number;
   I: number;
   pc: number;
-  vRegisters: Uint8Array;
+  vregisters: Uint8Array;
   sp: number;
   stack: Uint16Array;
   delayTimer: number;
@@ -23,7 +23,7 @@ export class Chip8 {
     this.opcode = 0;
     this.I = 0;
     this.pc = 0x200;
-    this.vRegisters = new Uint8Array(16);
+    this.vregisters = new Uint8Array(16);
     this.sp = 0;
     this.stack = new Uint16Array(16);
     this.delayTimer = 0;
@@ -60,7 +60,7 @@ export class Chip8 {
         }
       }
     }
-    this.vRegisters[0xf] = Number(erased);
+    this.vregisters[0xf] = Number(erased);
   }
 
   parseOpcode(opcode: number) {
@@ -130,78 +130,78 @@ export class Chip8 {
         this.callSubroutine(nnn);
         break;
       case 0x3000: // 3XNN - SE Vx, NN
-        if (this.vRegisters[x] === nn) {
+        if (this.vregisters[x] === nn) {
           this.skipNextInstruction();
         } else {
           this.nextInstruction();
         }
         break;
       case 0x4000: // 4XNN - SNE Vx, NN
-        if (this.vRegisters[x] !== nn) {
+        if (this.vregisters[x] !== nn) {
           this.skipNextInstruction();
         } else {
           this.nextInstruction();
         }
         break;
       case 0x5000: // 5XY0 - SE Vx, Vy
-        if (this.vRegisters[x] === this.vRegisters[y]) {
+        if (this.vregisters[x] === this.vregisters[y]) {
           this.skipNextInstruction();
         } else {
           this.nextInstruction();
         }
         break;
       case 0x6000: // 6XNN - LD Vx, NN
-        this.vRegisters[x] = nn;
+        this.vregisters[x] = nn;
         this.nextInstruction();
         break;
       case 0x7000: // 7XNN - ADD Vx, NN
-        this.vRegisters[x] += nn;
+        this.vregisters[x] += nn;
         this.nextInstruction();
         break;
       case 0x8000: // 8XYN
         switch (opcode & 0x000f) {
           case 0x0000: // 8XY0 - LD Vx, Vy
-            this.vRegisters[x] = this.vRegisters[y];
+            this.vregisters[x] = this.vregisters[y];
             this.nextInstruction();
             break;
           case 0x0001: // 8XY1 - OR Vx, Vy
-            this.vRegisters[x] |= this.vRegisters[y];
+            this.vregisters[x] |= this.vregisters[y];
             this.nextInstruction();
             break;
           case 0x0002: // 8XY2 - AND Vx, Vy
-            this.vRegisters[x] &= this.vRegisters[y];
+            this.vregisters[x] &= this.vregisters[y];
             this.nextInstruction();
             break;
           case 0x0003: // 8XY3 - XOR Vx, Vy
-            this.vRegisters[x] ^= this.vRegisters[y];
+            this.vregisters[x] ^= this.vregisters[y];
             this.nextInstruction();
             break;
           case 0x0004: // 8XY4 - ADD Vx, Vy
-            const sum = this.vRegisters[x] + this.vRegisters[y];
-            this.vRegisters[x] = sum;
-            this.vRegisters[0xf] = sum > 0xff ? 1 : 0;
+            const sum = this.vregisters[x] + this.vregisters[y];
+            this.vregisters[x] = sum;
+            this.vregisters[0xf] = sum > 0xff ? 1 : 0;
             this.nextInstruction();
             break;
           case 0x0005: // 8XY5 - SUB Vx, Vy
-            const diff = this.vRegisters[x] - this.vRegisters[y];
-            this.vRegisters[x] = diff;
-            this.vRegisters[0xf] = diff < 0 ? 0 : 1;
+            const diff = this.vregisters[x] - this.vregisters[y];
+            this.vregisters[x] = diff;
+            this.vregisters[0xf] = diff < 0 ? 0 : 1;
             this.nextInstruction();
             break;
           case 0x0006: // 8XY6 - SHR Vx
-            this.vRegisters[0xf] = this.vRegisters[x] & 0x1;
-            this.vRegisters[x] >>= 1;
+            this.vregisters[0xf] = this.vregisters[x] & 0x1;
+            this.vregisters[x] >>= 1;
             this.nextInstruction();
             break;
           case 0x0007: // 8XY7 - SUBN Vx, Vy
-            const diff2 = this.vRegisters[y] - this.vRegisters[x];
-            this.vRegisters[x] = diff2;
-            this.vRegisters[0xf] = diff2 < 0 ? 0 : 1;
+            const diff2 = this.vregisters[y] - this.vregisters[x];
+            this.vregisters[x] = diff2;
+            this.vregisters[0xf] = diff2 < 0 ? 0 : 1;
             this.nextInstruction();
             break;
           case 0x000e: // 8XYE - SHL Vx
-            this.vRegisters[0xf] = this.vRegisters[x] >> 7;
-            this.vRegisters[x] <<= 1;
+            this.vregisters[0xf] = this.vregisters[x] >> 7;
+            this.vregisters[x] <<= 1;
             this.nextInstruction();
             break;
           default:
@@ -209,7 +209,7 @@ export class Chip8 {
         }
         break;
       case 0x9000: // 9XY0 - SNE Vx, Vy
-        if (this.vRegisters[x] !== this.vRegisters[y]) {
+        if (this.vregisters[x] !== this.vregisters[y]) {
           this.skipNextInstruction();
         } else {
           this.nextInstruction();
@@ -220,58 +220,58 @@ export class Chip8 {
         this.nextInstruction();
         break;
       case 0xb000: // BNNN - JP V0, addr
-        this.pc = nnn + this.vRegisters[0];
+        this.pc = nnn + this.vregisters[0];
         break;
       case 0xc000: // CXNN - RND Vx, NN
-        this.vRegisters[x] = Math.floor(Math.random() * 255) & nn;
+        this.vregisters[x] = Math.floor(Math.random() * 255) & nn;
         this.nextInstruction();
         break;
       case 0xd000: // DXYN - DRW Vx, Vy, nibble
         const n = opcode & 0x000f;
-        this.drawSprite(this.vRegisters[x], this.vRegisters[y], n);
+        this.drawSprite(this.vregisters[x], this.vregisters[y], n);
         this.nextInstruction();
         break;
 
       case 0xf000:
         switch (nn) {
           case 0x07: // FX07 - LD Vx, DT
-            this.vRegisters[x] = this.delayTimer;
+            this.vregisters[x] = this.delayTimer;
             this.nextInstruction();
             break;
           case 0x15: // FX15 - LD DT, Vx
-            this.delayTimer = this.vRegisters[x];
+            this.delayTimer = this.vregisters[x];
             this.nextInstruction();
             break;
           case 0x18: // FX18 - LD ST, Vx
-            this.soundTimer = this.vRegisters[x];
+            this.soundTimer = this.vregisters[x];
             this.nextInstruction();
             break;
           case 0x1e: // FX1E - ADD I, Vx
-            this.I += this.vRegisters[x];
+            this.I += this.vregisters[x];
             this.nextInstruction();
             break;
           case 0x29: // FX29 - LD F, Vx
-            if (this.vRegisters[x] > 0xf) {
-              throw new Error(`Invalid font sprite: ${this.vRegisters[x]}`);
+            if (this.vregisters[x] > 0xf) {
+              throw new Error(`Invalid font sprite: ${this.vregisters[x]}`);
             }
-            this.I = this.vRegisters[x] * 5;
+            this.I = this.vregisters[x] * 5;
             this.nextInstruction();
             break;
           case 0x33: // FX33 - LD B, Vx
-            this.memory.setUint8(this.I, Math.floor(this.vRegisters[x] / 100));
-            this.memory.setUint8(this.I + 1, (this.vRegisters[x] / 10) % 10);
-            this.memory.setUint8(this.I + 2, this.vRegisters[x] % 10);
+            this.memory.setUint8(this.I, Math.floor(this.vregisters[x] / 100));
+            this.memory.setUint8(this.I + 1, (this.vregisters[x] / 10) % 10);
+            this.memory.setUint8(this.I + 2, this.vregisters[x] % 10);
             this.nextInstruction();
             break;
           case 0x55: // FX55 - LD [I], Vx
             for (let i = 0; i <= x; i++) {
-              this.memory.setUint8(this.I + i, this.vRegisters[i]);
+              this.memory.setUint8(this.I + i, this.vregisters[i]);
             }
             this.nextInstruction();
             break;
           case 0x65: // FX65 - LD Vx, [I]
             for (let i = 0; i <= x; i++) {
-              this.vRegisters[i] = this.memory.getUint8(this.I + i);
+              this.vregisters[i] = this.memory.getUint8(this.I + i);
             }
             this.nextInstruction();
             break;
@@ -285,11 +285,13 @@ export class Chip8 {
     }
   }
 
-  getInfo(): {
-    vRegisters: number[];
+  getData(): {
+    vregisters: number[];
+    vram: number[];
   } {
     return {
-      vRegisters: [...this.vRegisters],
+      vregisters: [...this.vregisters],
+      vram: [...this.vram],
     };
   }
 }
