@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, query } from "lit/decorators.js";
 import { ChipController } from "./ChipController";
+import { DISPLAY_WIDTH, DISPLAY_HEIGHT } from "./Chip8";
 
 @customElement("ch-app")
 export class App extends LitElement {
@@ -38,6 +39,10 @@ export class App extends LitElement {
 
       .display {
         grid-area: display;
+        width: 100%;
+        border: 1px solid var(--primary-color);
+        background-color: var(--primary-color);
+        image-rendering: pixelated;
       }
 
       .registers {
@@ -73,6 +78,7 @@ export class App extends LitElement {
     `,
   ];
 
+  @query(".display") canvas?: HTMLCanvasElement;
   private ctrl = new ChipController(this);
 
   handleLoadClick() {
@@ -95,8 +101,29 @@ export class App extends LitElement {
     this.ctrl.run();
   }
 
+  willUpdate() {
+    this.renderDisplay();
+  }
+
+  renderDisplay() {
+    const ctx = this.canvas?.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+
+    const { vram } = this.ctrl.getChipData();
+    const imageData = ctx.createImageData(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    for (let i = 0; i < imageData.data.length; i++) {
+      imageData.data[i * 4] = vram[i] === 0 ? 0 : 255; // red
+      imageData.data[i * 4 + 1] = vram[i] === 0 ? 0 : 255; // green
+      imageData.data[i * 4 + 2] = vram[i] === 0 ? 0 : 255; // blue
+      imageData.data[i * 4 + 3] = 255; // alpha
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }
+
   render() {
-    const info = this.ctrl.getInfo();
+    const { vregisters } = this.ctrl.getChipData();
 
     return html`
       <h1 class="app-header">CHIP-8 TypeScript</h1>
@@ -113,10 +140,14 @@ export class App extends LitElement {
       <section class="registers">
         <h2 class="subheader">Registers</h2>
         <ul>
-          ${info.vRegisters.map((v, i) => html`<li>V${i}: ${v}</li>`)}
+          ${vregisters.map((v, i) => html`<li>V${i}: ${v}</li>`)}
         </ul>
       </section>
-      <canvas class="display"></canvas>
+      <canvas
+        class="display"
+        width="${DISPLAY_WIDTH}"
+        height="${DISPLAY_HEIGHT}"
+      ></canvas>
     `;
   }
 }

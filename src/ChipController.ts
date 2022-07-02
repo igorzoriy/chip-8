@@ -1,6 +1,5 @@
 import { ReactiveController, ReactiveControllerHost } from "lit";
-import { Chip8, DISPLAY_WIDTH, DISPLAY_HEIGHT } from "./Chip8";
-import { dumpVram } from "./rom-utils";
+import { Chip8 } from "./Chip8";
 
 export class ChipController implements ReactiveController {
   host: ReactiveControllerHost;
@@ -19,13 +18,12 @@ export class ChipController implements ReactiveController {
   run() {
     this.timer = setInterval(() => {
       this.chip.performCycle();
-      dumpVram(this.chip.vram, DISPLAY_WIDTH, DISPLAY_HEIGHT);
       this.host.requestUpdate();
     }, 300);
   }
 
-  getInfo() {
-    return this.chip.getInfo();
+  getChipData() {
+    return this.chip.getData();
   }
 
   hostDisconnected() {

@@ -14,7 +14,7 @@ describe("Chip8", () => {
     expect(chip.I).toBe(0);
     expect(chip.pc).toBe(0x200);
     for (let i = 0; i < 16; i++) {
-      expect(chip.vRegisters[i]).toBe(0);
+      expect(chip.vregisters[i]).toBe(0);
     }
     expect(chip.sp).toBe(0);
     for (let i = 0; i < 16; i++) {
@@ -126,44 +126,44 @@ describe("Chip8", () => {
 
   test("chip executes `3XNN` opcode", () => {
     chip.loadRom(generateRom("30ff"));
-    chip.vRegisters[0] = 0x11;
+    chip.vregisters[0] = 0x11;
     chip.performCycle();
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `3XNN` opcode and skips next instruction", () => {
     chip.loadRom(generateRom("30ff"));
-    chip.vRegisters[0] = 0xff;
+    chip.vregisters[0] = 0xff;
     chip.performCycle();
     expect(chip.pc).toBe(0x204);
   });
 
   test("chip executes `4XNN` opcode", () => {
     chip.loadRom(generateRom("40ff"));
-    chip.vRegisters[0] = 0xff;
+    chip.vregisters[0] = 0xff;
     chip.performCycle();
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `4XNN` opcode and skips next instruction", () => {
     chip.loadRom(generateRom("40ff"));
-    chip.vRegisters[0] = 0x11;
+    chip.vregisters[0] = 0x11;
     chip.performCycle();
     expect(chip.pc).toBe(0x204);
   });
 
   test("chip executes `5XY0` opcode", () => {
     chip.loadRom(generateRom("5af0"));
-    chip.vRegisters[0xa] = 0x35;
-    chip.vRegisters[0xf] = 0x53;
+    chip.vregisters[0xa] = 0x35;
+    chip.vregisters[0xf] = 0x53;
     chip.performCycle();
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `5XY0` opcode and skips next instruction", () => {
     chip.loadRom(generateRom("5af0"));
-    chip.vRegisters[0xa] = 0x35;
-    chip.vRegisters[0xf] = 0x35;
+    chip.vregisters[0xa] = 0x35;
+    chip.vregisters[0xf] = 0x35;
     chip.performCycle();
     expect(chip.pc).toBe(0x204);
   });
@@ -171,116 +171,116 @@ describe("Chip8", () => {
   test("chip executes `6XNN` opcode", () => {
     chip.loadRom(generateRom("6c95"));
     chip.performCycle();
-    expect(chip.vRegisters[0xc]).toBe(0x95);
+    expect(chip.vregisters[0xc]).toBe(0x95);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `7XNN` opcode", () => {
     chip.loadRom(generateRom("7205"));
-    chip.vRegisters[2] = 0x02;
+    chip.vregisters[2] = 0x02;
     chip.performCycle();
-    expect(chip.vRegisters[2]).toBe(7);
+    expect(chip.vregisters[2]).toBe(7);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `8XY0` opcode", () => {
     chip.loadRom(generateRom("8650"));
-    chip.vRegisters[5] = 0x1a;
+    chip.vregisters[5] = 0x1a;
     chip.performCycle();
-    expect(chip.vRegisters[6]).toBe(0x1a);
+    expect(chip.vregisters[6]).toBe(0x1a);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `8XY1` opcode", () => {
     chip.loadRom(generateRom("8341"));
-    chip.vRegisters[3] = 0x05;
-    chip.vRegisters[4] = 0x03;
+    chip.vregisters[3] = 0x05;
+    chip.vregisters[4] = 0x03;
     chip.performCycle();
-    expect(chip.vRegisters[3]).toBe(0x07);
-    expect(chip.vRegisters[4]).toBe(0x03);
+    expect(chip.vregisters[3]).toBe(0x07);
+    expect(chip.vregisters[4]).toBe(0x03);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `8XY2` opcode", () => {
     chip.loadRom(generateRom("8342"));
-    chip.vRegisters[3] = 0x05;
-    chip.vRegisters[4] = 0x03;
+    chip.vregisters[3] = 0x05;
+    chip.vregisters[4] = 0x03;
     chip.performCycle();
-    expect(chip.vRegisters[3]).toBe(0x01);
-    expect(chip.vRegisters[4]).toBe(0x03);
+    expect(chip.vregisters[3]).toBe(0x01);
+    expect(chip.vregisters[4]).toBe(0x03);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `8XY3` opcode", () => {
     chip.loadRom(generateRom("8343"));
-    chip.vRegisters[3] = 0x05;
-    chip.vRegisters[4] = 0x03;
+    chip.vregisters[3] = 0x05;
+    chip.vregisters[4] = 0x03;
     chip.performCycle();
-    expect(chip.vRegisters[3]).toBe(0x06);
-    expect(chip.vRegisters[4]).toBe(0x03);
+    expect(chip.vregisters[3]).toBe(0x06);
+    expect(chip.vregisters[4]).toBe(0x03);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `8XY4` opcode", () => {
     chip.loadRom(generateRom("8344"));
-    chip.vRegisters[3] = 0x05;
-    chip.vRegisters[4] = 0x03;
+    chip.vregisters[3] = 0x05;
+    chip.vregisters[4] = 0x03;
     chip.performCycle();
-    expect(chip.vRegisters[3]).toBe(0x08);
-    expect(chip.vRegisters[4]).toBe(0x03);
+    expect(chip.vregisters[3]).toBe(0x08);
+    expect(chip.vregisters[4]).toBe(0x03);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `8XY5` opcode", () => {
     chip.loadRom(generateRom("8345"));
-    chip.vRegisters[3] = 0x05;
-    chip.vRegisters[4] = 0x03;
+    chip.vregisters[3] = 0x05;
+    chip.vregisters[4] = 0x03;
     chip.performCycle();
-    expect(chip.vRegisters[3]).toBe(0x02);
-    expect(chip.vRegisters[4]).toBe(0x03);
+    expect(chip.vregisters[3]).toBe(0x02);
+    expect(chip.vregisters[4]).toBe(0x03);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `8XY6` opcode", () => {
     chip.loadRom(generateRom("8306"));
-    chip.vRegisters[3] = 0xb3;
+    chip.vregisters[3] = 0xb3;
     chip.performCycle();
-    expect(chip.vRegisters[3]).toBe(0x59);
-    expect(chip.vRegisters[0xf]).toBe(1);
+    expect(chip.vregisters[3]).toBe(0x59);
+    expect(chip.vregisters[0xf]).toBe(1);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `8XY7` opcode", () => {
     chip.loadRom(generateRom("8347"));
-    chip.vRegisters[3] = 0x05;
-    chip.vRegisters[4] = 0x08;
+    chip.vregisters[3] = 0x05;
+    chip.vregisters[4] = 0x08;
     chip.performCycle();
-    expect(chip.vRegisters[3]).toBe(0x03);
-    expect(chip.vRegisters[0xf]).toBe(1);
+    expect(chip.vregisters[3]).toBe(0x03);
+    expect(chip.vregisters[0xf]).toBe(1);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `8XYE` opcode", () => {
     chip.loadRom(generateRom("830e"));
-    chip.vRegisters[3] = 0x11;
+    chip.vregisters[3] = 0x11;
     chip.performCycle();
-    expect(chip.vRegisters[3]).toBe(0x22);
-    expect(chip.vRegisters[0xf]).toBe(0);
+    expect(chip.vregisters[3]).toBe(0x22);
+    expect(chip.vregisters[0xf]).toBe(0);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `9XY0` opcode", () => {
     chip.loadRom(generateRom("9140"));
-    chip.vRegisters[1] = 0x01;
-    chip.vRegisters[4] = 0x01;
+    chip.vregisters[1] = 0x01;
+    chip.vregisters[4] = 0x01;
     chip.performCycle();
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `9XY0` opcode and skips next instruction", () => {
     chip.loadRom(generateRom("9140"));
-    chip.vRegisters[1] = 0x01;
-    chip.vRegisters[4] = 0x02;
+    chip.vregisters[1] = 0x01;
+    chip.vregisters[4] = 0x02;
     chip.performCycle();
     expect(chip.pc).toBe(0x204);
   });
@@ -294,7 +294,7 @@ describe("Chip8", () => {
 
   test("chip executes `BNNN` opcode", () => {
     chip.loadRom(generateRom("b0ff"));
-    chip.vRegisters[0] = 0x10;
+    chip.vregisters[0] = 0x10;
     chip.performCycle();
     expect(chip.pc).toBe(0x010f);
   });
@@ -322,8 +322,8 @@ describe("Chip8", () => {
     ) => {
       chip.loadRom(generateRom(opcode));
       chip.vram[0] = 1; // fill top left pixel
-      chip.vRegisters[0] = x;
-      chip.vRegisters[1] = y;
+      chip.vregisters[0] = x;
+      chip.vregisters[1] = y;
       chip.I = 0x500;
       for (let i = 0; i < sprite.length; i++) {
         chip.memory.setUint8(chip.I + i, sprite[i]);
@@ -338,7 +338,7 @@ describe("Chip8", () => {
           expect(chip.vram[i]).toBe(0);
         }
       }
-      expect(chip.vRegisters[0xf]).toBe(erased);
+      expect(chip.vregisters[0xf]).toBe(erased);
       expect(chip.pc).toBe(0x202);
     }
   );
@@ -347,13 +347,13 @@ describe("Chip8", () => {
     chip.loadRom(generateRom("f407"));
     chip.delayTimer = 0x3c;
     chip.performCycle();
-    expect(chip.vRegisters[4]).toBe(0x3c);
+    expect(chip.vregisters[4]).toBe(0x3c);
     expect(chip.pc).toBe(0x202);
   });
 
   test("chip executes `FX15` opcode", () => {
     chip.loadRom(generateRom("f515"));
-    chip.vRegisters[5] = 0xb1;
+    chip.vregisters[5] = 0xb1;
     chip.performCycle();
     expect(chip.delayTimer).toBe(0xb1);
     expect(chip.pc).toBe(0x202);
@@ -361,7 +361,7 @@ describe("Chip8", () => {
 
   test("chip executes `FX18` opcode", () => {
     chip.loadRom(generateRom("f018"));
-    chip.vRegisters[0] = 0x11;
+    chip.vregisters[0] = 0x11;
     chip.performCycle();
     expect(chip.soundTimer).toBe(0x11);
     expect(chip.pc).toBe(0x202);
@@ -370,7 +370,7 @@ describe("Chip8", () => {
   test("chip executes `FX1E` opcode", () => {
     chip.loadRom(generateRom("f11e"));
     chip.I = 0x100;
-    chip.vRegisters[1] = 0x34;
+    chip.vregisters[1] = 0x34;
     chip.performCycle();
     expect(chip.I).toBe(0x134);
     expect(chip.pc).toBe(0x202);
@@ -378,7 +378,7 @@ describe("Chip8", () => {
 
   test("chip executes `FX29` opcode", () => {
     chip.loadRom(generateRom("f129"));
-    chip.vRegisters[1] = 0xe;
+    chip.vregisters[1] = 0xe;
     chip.performCycle();
     expect(chip.I).toBe(0x46);
     expect(chip.pc).toBe(0x202);
@@ -405,7 +405,7 @@ describe("Chip8", () => {
       i2: number
     ) => {
       chip.loadRom(generateRom(opcode));
-      chip.vRegisters[rIndex] = rValue;
+      chip.vregisters[rIndex] = rValue;
       chip.I = i;
       chip.performCycle();
       const { memory } = chip;
@@ -419,10 +419,10 @@ describe("Chip8", () => {
   test("chip executes `FX55` opcode", () => {
     chip.loadRom(generateRom("f355"));
     chip.I = 0x400;
-    chip.vRegisters[0] = 0xf1;
-    chip.vRegisters[1] = 0x34;
-    chip.vRegisters[2] = 0x56;
-    chip.vRegisters[3] = 0x78;
+    chip.vregisters[0] = 0xf1;
+    chip.vregisters[1] = 0x34;
+    chip.vregisters[2] = 0x56;
+    chip.vregisters[3] = 0x78;
     chip.performCycle();
     const { memory } = chip;
     expect(memory.getUint8(0x400)).toBe(0xf1);
@@ -439,9 +439,9 @@ describe("Chip8", () => {
     chip.memory.setUint8(0x445, 0x34);
     chip.memory.setUint8(0x446, 0xfc);
     chip.performCycle();
-    expect(chip.vRegisters[0]).toBe(0x56);
-    expect(chip.vRegisters[1]).toBe(0x34);
-    expect(chip.vRegisters[2]).toBe(0xfc);
+    expect(chip.vregisters[0]).toBe(0x56);
+    expect(chip.vregisters[1]).toBe(0x34);
+    expect(chip.vregisters[2]).toBe(0xfc);
     expect(chip.pc).toBe(0x202);
   });
 });
