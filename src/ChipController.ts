@@ -19,7 +19,7 @@ export class ChipController implements ReactiveController {
     this.timer = setInterval(() => {
       this.chip.performCycle();
       this.host.requestUpdate();
-    }, 300);
+    }, 100);
   }
 
   getChipData() {
