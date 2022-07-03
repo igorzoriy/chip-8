@@ -75,17 +75,47 @@ export class App extends LitElement {
       .file-input {
         display: none;
       }
+
+      .rom-selector {
+        margin: 0.2rem 0.4rem;
+        padding: 0.5rem;
+        background-color: var(--bg-color);
+        color: var(--primary-color);
+        font-family: var(--font-family);
+        border: 1px solid var(--primary-color);
+        border-radius: 0;
+        text-align: center;
+        appearance: none;
+        cursor: pointer;
+      }
     `,
   ];
 
+  @query(".file-input") fileInput?: HTMLInputElement;
+  @query(".rom-selector") romSelector?: HTMLSelectElement;
   @query(".display") canvas?: HTMLCanvasElement;
   private ctrl = new ChipController(this);
 
-  handleLoadClick() {
-    (this.renderRoot.querySelector(".file-input") as HTMLInputElement)?.click();
+  async handleSelectRom() {
+    const filename = this.romSelector?.value;
+    if (!filename) {
+      return;
+    }
+    try {
+      const res = await fetch(`roms/${filename}`);
+      const buffer = await res.arrayBuffer();
+      this.ctrl.loadRom(buffer);
+    } catch (e) {
+      console.error(e);
+    }
+    this.ctrl.run();
   }
 
-  async handleChange(e: Event) {
+  handleUploadClick() {
+    this.fileInput?.click();
+  }
+
+  async handleUploadRom(e: Event) {
     const target = e.target as HTMLInputElement;
     if (!target.files || target.files.length === 0) {
       return;
@@ -97,7 +127,6 @@ export class App extends LitElement {
     } catch (e) {
       console.error(e);
     }
-
     this.ctrl.run();
   }
 
@@ -129,10 +158,26 @@ export class App extends LitElement {
       <h1 class="app-header">CHIP-8 TypeScript</h1>
       <section class="controls">
         <h2 class="subheader">Controls</h2>
-        <button class="button" @click="${this.handleLoadClick}">
-          load rom
+        <select class="rom-selector" @change="${this.handleSelectRom}">
+          <option value="" selected disabled hidden>Select ROM</option>
+          <optgroup label="Games">
+            <option value="invaders.ch8">Invaders</option>
+            <option value="maze.ch8">Maze</option>
+            <option value="pong.ch8">Pong</option>
+          </optgroup>
+          <optgroup label="Tests">
+            <option value="font-test.ch8">Font Test</option>
+            <option value="ibm-logo.ch8">IBM Logo</option>
+          </optgroup>
+        </select>
+        <button class="button" @click="${this.handleUploadClick}">
+          Upload ROM
         </button>
-        <input class="file-input" type="file" @change="${this.handleChange}" />
+        <input
+          class="file-input"
+          type="file"
+          @change="${this.handleUploadRom}"
+        />
         <button class="button">reset</button>
         <button class="button">play/pause</button>
         <button class="button">mute/unmute</button>

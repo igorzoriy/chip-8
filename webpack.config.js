@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: "./src/App.ts",
@@ -19,7 +20,12 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
   },
-  plugins: [new HtmlWebpackPlugin({ template: "public/index.html" })],
+  plugins: [
+    new HtmlWebpackPlugin({ template: "public/index.html" }),
+    new CopyPlugin({
+      patterns: [{ from: "roms", to: "roms" }],
+    }),
+  ],
   mode: process.env.NODE_ENV === "production" ? "production" : "development",
   devtool:
     process.env.NODE_ENV === "production" ? "source-map" : "inline-source-map",
