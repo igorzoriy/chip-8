@@ -20,9 +20,11 @@ module.exports = {
     extensions: [".ts", ".js"],
   },
   plugins: [new HtmlWebpackPlugin({ template: "public/index.html" })],
-  mode: "development",
-  devtool: "inline-source-map",
+  mode: process.env.NODE_ENV === "production" ? "production" : "development",
+  devtool:
+    process.env.NODE_ENV === "production" ? "source-map" : "inline-source-map",
   devServer: {
     static: "./dist",
+    port: 3000,
   },
 };
