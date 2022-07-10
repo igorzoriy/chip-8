@@ -16,6 +16,7 @@ export class Chip8 {
   delayTimer: number;
   soundTimer: number;
   vram: Uint8Array;
+  keyboard: Uint8Array;
 
   constructor() {
     this.memoryBuffer = new ArrayBuffer(MEMORY_SIZE);
@@ -30,6 +31,7 @@ export class Chip8 {
     this.soundTimer = 0;
     this.vram = new Uint8Array(DISPLAY_WIDTH * DISPLAY_HEIGHT);
     this.loadFont();
+    this.keyboard = new Uint8Array(16);
   }
 
   loadFont() {
@@ -63,6 +65,10 @@ export class Chip8 {
     this.vregisters[0xf] = Number(erased);
   }
 
+  updateKeyboard(keyboard: Uint8Array) {
+    this.keyboard = keyboard;
+  }
+
   parseOpcode(opcode: number) {
     const x = (opcode & 0x0f00) >> 8;
     const y = (opcode & 0x00f0) >> 4;
@@ -71,11 +77,11 @@ export class Chip8 {
     return { x, y, nn, nnn };
   }
 
-  nextInstruction() {
+  private nextInstruction() {
     this.pc += 2;
   }
 
-  skipNextInstruction() {
+  private skipNextInstruction() {
     this.pc += 4;
   }
 
@@ -106,6 +112,10 @@ export class Chip8 {
     }
   }
 
+  private throwUnknownOpcode(opcode: number) {
+    throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
+  }
+
   performCycle() {
     const opcode = this.memory.getUint16(this.pc);
     const { x, y, nn, nnn } = this.parseOpcode(opcode);
@@ -120,7 +130,7 @@ export class Chip8 {
           // 00EE - RET
           this.returnFromSubroutine();
         } else {
-          throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
+          this.throwUnknownOpcode(opcode);
         }
         break;
       case 0x1000: // 1NNN - JP addr
@@ -205,7 +215,7 @@ export class Chip8 {
             this.nextInstruction();
             break;
           default:
-            throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
+            this.throwUnknownOpcode(opcode);
         }
         break;
       case 0x9000: // 9XY0 - SNE Vx, Vy
@@ -231,7 +241,27 @@ export class Chip8 {
         this.drawSprite(this.vregisters[x], this.vregisters[y], n);
         this.nextInstruction();
         break;
-
+      case 0xe000:
+        if (nn === 0x9e) {
+          // EX9E - SKP Vx
+          const key = this.vregisters[x];
+          if (this.keyboard[key]) {
+            this.skipNextInstruction();
+          } else {
+            this.nextInstruction();
+          }
+        } else if (nn === 0xa1) {
+          // EXA1 - SKNP Vx
+          const key = this.vregisters[x];
+          if (!this.keyboard[key]) {
+            this.skipNextInstruction();
+          } else {
+            this.nextInstruction();
+          }
+        } else {
+          this.throwUnknownOpcode(opcode);
+        }
+        break;
       case 0xf000:
         switch (nn) {
           case 0x07: // FX07 - LD Vx, DT
@@ -276,11 +306,11 @@ export class Chip8 {
             this.nextInstruction();
             break;
           default:
-            throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
+            this.throwUnknownOpcode(opcode);
         }
         break;
       default:
-        throw new Error(`Unknown opcode: ${opcode.toString(16)}`);
+        this.throwUnknownOpcode(opcode);
       /* eslint-enable no-case-declarations */
     }
   }

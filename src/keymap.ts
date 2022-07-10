@@ -1,0 +1,18 @@
+export const keymap = [
+  "Digit1",
+  "Digit2",
+  "Digit3",
+  "Digit4",
+  "KeyQ",
+  "KeyW",
+  "KeyE",
+  "KeyR",
+  "KeyA",
+  "KeyS",
+  "KeyD",
+  "KeyF",
+  "KeyZ",
+  "KeyX",
+  "KeyC",
+  "KeyV",
+];

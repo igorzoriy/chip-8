@@ -343,6 +343,32 @@ describe("Chip8", () => {
     }
   );
 
+  test("chip executes `EX9E` opcode", () => {
+    chip.loadRom(generateRom("e09e e09e"));
+    chip.vregisters;
+    chip.performCycle();
+    expect(chip.pc).toBe(0x202);
+    chip.updateKeyboard(
+      new Uint8Array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    );
+    chip.performCycle();
+    expect(chip.pc).toBe(0x206);
+  });
+
+  test("chip executes `EXA1` opcode", () => {
+    chip.loadRom(generateRom("e0a1 e0a1"));
+    chip.updateKeyboard(
+      new Uint8Array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    );
+    chip.performCycle();
+    expect(chip.pc).toBe(0x202);
+    chip.updateKeyboard(
+      new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    );
+    chip.performCycle();
+    expect(chip.pc).toBe(0x206);
+  });
+
   test("chip executes `FX07` opcode", () => {
     chip.loadRom(generateRom("f407"));
     chip.delayTimer = 0x3c;

@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement, query } from "lit/decorators.js";
-import { ChipController } from "./ChipController";
+import { AppController } from "./AppController";
 import { DISPLAY_WIDTH, DISPLAY_HEIGHT } from "./Chip8";
 
 @customElement("ch-app")
@@ -94,7 +94,11 @@ export class App extends LitElement {
   @query(".file-input") fileInput?: HTMLInputElement;
   @query(".rom-selector") romSelector?: HTMLSelectElement;
   @query(".display") canvas?: HTMLCanvasElement;
-  private ctrl = new ChipController(this);
+  private ctrl = new AppController(this);
+
+  connectedCallback() {
+    super.connectedCallback();
+  }
 
   async handleSelectRom() {
     const filename = this.romSelector?.value;
@@ -181,7 +185,7 @@ export class App extends LitElement {
         />
         <button class="button">reset</button>
         <button class="button">play/pause</button>
-        <button class="button">mute/unmute</button>
+        <button class="button">🔊 mute/unmute</button>
       </section>
       <section class="registers">
         <h2 class="subheader">Registers</h2>
