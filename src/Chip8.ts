@@ -88,12 +88,12 @@ export class Chip8 {
   }
 
   callSubroutine(address: number) {
-    if (this.sp >= 15) {
+    if (this.sp > 15) {
       throw new Error("Stack overflow");
     }
-    this.stack[this.sp] = this.pc;
-    this.pc = address;
+    this.stack[this.sp] = this.pc + 2;
     this.sp++;
+    this.pc = address;
   }
 
   tick() {
@@ -287,10 +287,14 @@ export class Chip8 {
 
   getData(): {
     vregisters: number[];
+    I: number;
+    pc: number;
     vram: number[];
   } {
     return {
       vregisters: [...this.vregisters],
+      I: this.I,
+      pc: this.pc,
       vram: [...this.vram],
     };
   }
