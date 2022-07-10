@@ -152,7 +152,7 @@ export class App extends LitElement {
   }
 
   render() {
-    const { vregisters } = this.ctrl.getChipData();
+    const { vregisters, I, pc } = this.ctrl.getChipData();
 
     return html`
       <h1 class="app-header">CHIP-8 TypeScript</h1>
@@ -168,6 +168,7 @@ export class App extends LitElement {
           <optgroup label="Tests">
             <option value="font-test.ch8">Font Test</option>
             <option value="ibm-logo.ch8">IBM Logo</option>
+            <option value="chip8-logo.ch8">CHIP-8 Logo</option>
           </optgroup>
         </select>
         <button class="button" @click="${this.handleUploadClick}">
@@ -185,7 +186,9 @@ export class App extends LitElement {
       <section class="registers">
         <h2 class="subheader">Registers</h2>
         <ul>
-          ${vregisters.map((v, i) => html`<li>V${i}: ${v}</li>`)}
+          <li>I: ${I.toString(16)}</li>
+          <li>PC: ${pc.toString(16)}</li>
+          ${vregisters.map((v, i) => html`<li>V${i}: ${v.toString(16)}</li>`)}
         </ul>
       </section>
       <canvas

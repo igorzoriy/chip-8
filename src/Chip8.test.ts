@@ -109,16 +109,16 @@ describe("Chip8", () => {
     chip.performCycle();
     expect(chip.pc).toBe(0x4ff);
     expect(chip.sp).toBe(1);
-    expect(chip.stack[0]).toBe(0x200);
+    expect(chip.stack[0]).toBe(0x202);
   });
 
   test("chip executes `2NNN` opcode and throws an exception when stack is overflow", () => {
     chip.loadRom(
       generateRom(
-        "2202 2204 2206 2208 220A 220C 220E 2210 2212 2214 2216 2218 221A 221C 221E 2220"
+        "2202 2204 2206 2208 220A 220C 220E 2210 2212 2214 2216 2218 221A 221C 221E 2220 2222"
       )
     );
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 16; i++) {
       chip.performCycle();
     }
     expect(() => chip.performCycle()).toThrowError("Stack overflow");
