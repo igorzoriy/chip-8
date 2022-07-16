@@ -46,6 +46,16 @@ export class AppController implements ReactiveController {
     this.host.requestUpdate();
   }
 
+  reset() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+    this.loaded = false;
+    this.paused = true;
+    this.chip.reset();
+    this.host.requestUpdate();
+  }
+
   getChipData() {
     return this.chip.getData();
   }

@@ -5,20 +5,24 @@ export const DISPLAY_WIDTH = 64;
 export const DISPLAY_HEIGHT = 32;
 
 export class Chip8 {
-  memoryBuffer: ArrayBuffer;
-  memory: DataView;
-  opcode: number;
-  I: number;
-  pc: number;
-  vregisters: Uint8Array;
-  sp: number;
-  stack: Uint16Array;
-  delayTimer: number;
-  soundTimer: number;
-  vram: Uint8Array;
-  keyboard: Uint8Array;
+  memoryBuffer!: ArrayBuffer;
+  memory!: DataView;
+  opcode!: number;
+  I!: number;
+  pc!: number;
+  vregisters!: Uint8Array;
+  sp!: number;
+  stack!: Uint16Array;
+  delayTimer!: number;
+  soundTimer!: number;
+  vram!: Uint8Array;
+  keyboard!: Uint8Array;
 
   constructor() {
+    this.reset();
+  }
+
+  reset() {
     this.memoryBuffer = new ArrayBuffer(MEMORY_SIZE);
     this.memory = new DataView(this.memoryBuffer);
     this.opcode = 0;
@@ -34,7 +38,7 @@ export class Chip8 {
     this.keyboard = new Uint8Array(16);
   }
 
-  loadFont() {
+  private loadFont() {
     new Uint8Array(this.memoryBuffer).set(new Uint8Array(font), 0);
   }
 

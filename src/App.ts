@@ -150,6 +150,10 @@ export class App extends LitElement {
     }
   }
 
+  handleResetClick() {
+    this.ctrl.reset();
+  }
+
   willUpdate() {
     this.renderDisplay();
   }
@@ -207,7 +211,13 @@ export class App extends LitElement {
         >
           ${this.ctrl.paused ? "Play" : "Pause"}
         </button>
-        <button class="button">reset</button>
+        <button
+          class="button"
+          @click="${this.handleResetClick}"
+          ?disabled="${!ctrl.loaded}"
+        >
+          Reset
+        </button>
         <button class="button">🔊 mute/unmute</button>
       </section>
       <section class="registers">
