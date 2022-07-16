@@ -4,21 +4,27 @@ import { keymap } from "./keymap";
 
 export class AppController implements ReactiveController {
   host: ReactiveControllerHost;
-  chip: Chip8;
+  loaded: boolean;
+  paused: boolean;
+  private chip: Chip8;
   private timer?: ReturnType<typeof setInterval>;
   private keyboard: Uint8Array;
 
   constructor(host: ReactiveControllerHost) {
     (this.host = host).addController(this);
     this.chip = new Chip8();
+    this.loaded = false;
+    this.paused = true;
     this.keyboard = new Uint8Array(16);
   }
 
   loadRom(buffer: ArrayBuffer) {
     this.chip.loadRom(buffer);
+    this.loaded = true;
   }
 
-  run() {
+  play() {
+    this.paused = false;
     let counter = 0;
     this.timer = setInterval(() => {
       counter++;
@@ -30,6 +36,14 @@ export class AppController implements ReactiveController {
       this.chip.performCycle();
       this.host.requestUpdate();
     }, 3);
+  }
+
+  pause() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+    this.paused = true;
+    this.host.requestUpdate();
   }
 
   getChipData() {

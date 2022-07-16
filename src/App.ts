@@ -68,8 +68,14 @@ export class App extends LitElement {
         font-family: var(--font-family);
         cursor: pointer;
       }
-      .button:hover {
+      .button:hover:not([disabled]) {
+        background-color: var(--secondary-color);
+        color: var(--bg-color);
+        border-color: var(--bg-color);
+      }
+      .button[disabled] {
         color: var(--secondary-color);
+        cursor: default;
       }
 
       .file-input {
@@ -88,6 +94,11 @@ export class App extends LitElement {
         appearance: none;
         cursor: pointer;
       }
+      .rom-selector:hover {
+        background-color: var(--secondary-color);
+        color: var(--bg-color);
+        border-color: var(--bg-color);
+      }
     `,
   ];
 
@@ -95,10 +106,6 @@ export class App extends LitElement {
   @query(".rom-selector") romSelector?: HTMLSelectElement;
   @query(".display") canvas?: HTMLCanvasElement;
   private ctrl = new AppController(this);
-
-  connectedCallback() {
-    super.connectedCallback();
-  }
 
   async handleSelectRom() {
     const filename = this.romSelector?.value;
@@ -112,7 +119,7 @@ export class App extends LitElement {
     } catch (e) {
       console.error(e);
     }
-    this.ctrl.run();
+    this.ctrl.play();
   }
 
   handleUploadClick() {
@@ -131,7 +138,16 @@ export class App extends LitElement {
     } catch (e) {
       console.error(e);
     }
-    this.ctrl.run();
+    this.ctrl.play();
+  }
+
+  handlePlayPauseClick() {
+    const { ctrl } = this;
+    if (ctrl.paused) {
+      ctrl.play();
+    } else {
+      ctrl.pause();
+    }
   }
 
   willUpdate() {
@@ -156,7 +172,8 @@ export class App extends LitElement {
   }
 
   render() {
-    const { vregisters, I, pc } = this.ctrl.getChipData();
+    const { ctrl } = this;
+    const { vregisters, I, pc } = ctrl.getChipData();
 
     return html`
       <h1 class="app-header">CHIP-8 TypeScript</h1>
@@ -183,8 +200,14 @@ export class App extends LitElement {
           type="file"
           @change="${this.handleUploadRom}"
         />
+        <button
+          class="button"
+          @click="${this.handlePlayPauseClick}"
+          ?disabled="${!ctrl.loaded}"
+        >
+          ${this.ctrl.paused ? "Play" : "Pause"}
+        </button>
         <button class="button">reset</button>
-        <button class="button">play/pause</button>
         <button class="button">🔊 mute/unmute</button>
       </section>
       <section class="registers">
