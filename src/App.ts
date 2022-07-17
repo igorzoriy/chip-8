@@ -99,46 +99,54 @@ export class App extends LitElement {
         color: var(--bg-color);
         border-color: var(--bg-color);
       }
+
+      .rom-name {
+        text-align: center;
+        font-weight: 700;
+        padding: 0.5rem;
+      }
     `,
   ];
 
   @query(".file-input") fileInput?: HTMLInputElement;
-  @query(".rom-selector") romSelector?: HTMLSelectElement;
+  @query(".rom-selector") romSelector!: HTMLSelectElement;
   @query(".display") canvas?: HTMLCanvasElement;
   private ctrl = new AppController(this);
 
-  async handleSelectRom() {
-    const filename = this.romSelector?.value;
-    if (!filename) {
-      return;
-    }
+  async loadAndPlay(name: string, blob: Blob | Body) {
+    const { ctrl } = this;
     try {
-      const res = await fetch(`roms/${filename}`);
-      const buffer = await res.arrayBuffer();
-      this.ctrl.loadRom(buffer);
+      const buffer = await blob.arrayBuffer();
+      ctrl.reset();
+      ctrl.loadRom(name, buffer);
+      ctrl.play();
     } catch (e) {
       console.error(e);
     }
-    this.ctrl.play();
+  }
+
+  async handleSelectRom() {
+    const filename = this.romSelector.value;
+    this.romSelector.value = "";
+    try {
+      const res = await fetch(`roms/${filename}`);
+      this.loadAndPlay(filename, res);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   handleUploadClick() {
     this.fileInput?.click();
   }
 
-  async handleUploadRom(e: Event) {
+  handleUploadRom(e: Event) {
     const target = e.target as HTMLInputElement;
     if (!target.files || target.files.length === 0) {
       return;
     }
     const file = target.files[0];
-    try {
-      const buffer = await file.arrayBuffer();
-      this.ctrl.loadRom(buffer);
-    } catch (e) {
-      console.error(e);
-    }
-    this.ctrl.play();
+    this.loadAndPlay(file.name, file);
   }
 
   handlePlayPauseClick() {
@@ -183,6 +191,9 @@ export class App extends LitElement {
       <h1 class="app-header">CHIP-8 TypeScript</h1>
       <section class="controls">
         <h2 class="subheader">Controls</h2>
+        <span class="rom-name"
+          >${ctrl.romName === "" ? "No rom" : ctrl.romName}</span
+        >
         <select class="rom-selector" @change="${this.handleSelectRom}">
           <option value="" selected disabled hidden>Select ROM</option>
           <optgroup label="Games">

@@ -4,6 +4,7 @@ import { keymap } from "./keymap";
 
 export class AppController implements ReactiveController {
   host: ReactiveControllerHost;
+  romName: string;
   loaded: boolean;
   paused: boolean;
   private chip: Chip8;
@@ -13,14 +14,17 @@ export class AppController implements ReactiveController {
   constructor(host: ReactiveControllerHost) {
     (this.host = host).addController(this);
     this.chip = new Chip8();
+    this.romName = "";
     this.loaded = false;
     this.paused = true;
     this.keyboard = new Uint8Array(16);
   }
 
-  loadRom(buffer: ArrayBuffer) {
-    this.chip.loadRom(buffer);
+  loadRom(name: string, rom: ArrayBuffer) {
+    this.romName = name;
     this.loaded = true;
+    this.chip.loadRom(rom);
+    this.host.requestUpdate();
   }
 
   play() {
@@ -50,6 +54,7 @@ export class AppController implements ReactiveController {
     if (this.timer) {
       clearInterval(this.timer);
     }
+    this.romName = "";
     this.loaded = false;
     this.paused = true;
     this.chip.reset();
