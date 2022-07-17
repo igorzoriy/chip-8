@@ -68,8 +68,14 @@ export class App extends LitElement {
         font-family: var(--font-family);
         cursor: pointer;
       }
-      .button:hover {
+      .button:hover:not([disabled]) {
+        background-color: var(--secondary-color);
+        color: var(--bg-color);
+        border-color: var(--bg-color);
+      }
+      .button[disabled] {
         color: var(--secondary-color);
+        cursor: default;
       }
 
       .file-input {
@@ -88,50 +94,72 @@ export class App extends LitElement {
         appearance: none;
         cursor: pointer;
       }
+      .rom-selector:hover {
+        background-color: var(--secondary-color);
+        color: var(--bg-color);
+        border-color: var(--bg-color);
+      }
+
+      .rom-name {
+        text-align: center;
+        font-weight: 700;
+        padding: 0.5rem;
+      }
     `,
   ];
 
   @query(".file-input") fileInput?: HTMLInputElement;
-  @query(".rom-selector") romSelector?: HTMLSelectElement;
+  @query(".rom-selector") romSelector!: HTMLSelectElement;
   @query(".display") canvas?: HTMLCanvasElement;
   private ctrl = new AppController(this);
 
-  connectedCallback() {
-    super.connectedCallback();
-  }
-
-  async handleSelectRom() {
-    const filename = this.romSelector?.value;
-    if (!filename) {
-      return;
-    }
+  async loadAndPlay(name: string, blob: Blob | Body) {
+    const { ctrl } = this;
     try {
-      const res = await fetch(`roms/${filename}`);
-      const buffer = await res.arrayBuffer();
-      this.ctrl.loadRom(buffer);
+      const buffer = await blob.arrayBuffer();
+      ctrl.reset();
+      ctrl.loadRom(name, buffer);
+      ctrl.play();
     } catch (e) {
       console.error(e);
     }
-    this.ctrl.run();
+  }
+
+  async handleSelectRom() {
+    const filename = this.romSelector.value;
+    this.romSelector.value = "";
+    try {
+      const res = await fetch(`roms/${filename}`);
+      this.loadAndPlay(filename, res);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   handleUploadClick() {
     this.fileInput?.click();
   }
 
-  async handleUploadRom(e: Event) {
+  handleUploadRom(e: Event) {
     const target = e.target as HTMLInputElement;
     if (!target.files || target.files.length === 0) {
       return;
     }
     const file = target.files[0];
-    try {
-      const buffer = await file.arrayBuffer();
-      this.ctrl.loadRom(buffer);
-    } catch (e) {
-      console.error(e);
+    this.loadAndPlay(file.name, file);
+  }
+
+  handlePlayPauseClick() {
+    const { ctrl } = this;
+    if (ctrl.paused) {
+      ctrl.play();
+    } else {
+      ctrl.pause();
     }
-    this.ctrl.run();
+  }
+
+  handleResetClick() {
+    this.ctrl.reset();
   }
 
   willUpdate() {
@@ -156,12 +184,16 @@ export class App extends LitElement {
   }
 
   render() {
-    const { vregisters, I, pc } = this.ctrl.getChipData();
+    const { ctrl } = this;
+    const { vregisters, I, pc } = ctrl.getChipData();
 
     return html`
       <h1 class="app-header">CHIP-8 TypeScript</h1>
       <section class="controls">
         <h2 class="subheader">Controls</h2>
+        <span class="rom-name"
+          >${ctrl.romName === "" ? "No rom" : ctrl.romName}</span
+        >
         <select class="rom-selector" @change="${this.handleSelectRom}">
           <option value="" selected disabled hidden>Select ROM</option>
           <optgroup label="Games">
@@ -183,8 +215,20 @@ export class App extends LitElement {
           type="file"
           @change="${this.handleUploadRom}"
         />
-        <button class="button">reset</button>
-        <button class="button">play/pause</button>
+        <button
+          class="button"
+          @click="${this.handlePlayPauseClick}"
+          ?disabled="${!ctrl.loaded}"
+        >
+          ${this.ctrl.paused ? "Play" : "Pause"}
+        </button>
+        <button
+          class="button"
+          @click="${this.handleResetClick}"
+          ?disabled="${!ctrl.loaded}"
+        >
+          Reset
+        </button>
         <button class="button">🔊 mute/unmute</button>
       </section>
       <section class="registers">
