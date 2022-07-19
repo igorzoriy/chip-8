@@ -1,15 +1,21 @@
 import { ReactiveController, ReactiveControllerHost } from "lit";
 import { Chip8 } from "./Chip8";
 import { keymap } from "./keymap";
+import { Speaker } from "./Speaker";
+import { Ticker } from "./Ticker";
 
 export class AppController implements ReactiveController {
   host: ReactiveControllerHost;
   romName: string;
   loaded: boolean;
   paused: boolean;
+  muted: boolean;
   private chip: Chip8;
-  private timer?: ReturnType<typeof setInterval>;
   private keyboard: Uint8Array;
+  private speaker: Speaker;
+  private ticker: Ticker;
+  private frequency = 60;
+  private speed = 5;
 
   constructor(host: ReactiveControllerHost) {
     (this.host = host).addController(this);
@@ -17,7 +23,19 @@ export class AppController implements ReactiveController {
     this.romName = "";
     this.loaded = false;
     this.paused = true;
+    this.muted = false;
     this.keyboard = new Uint8Array(16);
+    this.speaker = new Speaker();
+    this.ticker = new Ticker(this.tick, this.frequency);
+  }
+
+  hostConnected() {
+    document.addEventListener("keydown", this.handleKeyDown);
+    document.addEventListener("keyup", this.handleKeyUp);
+  }
+
+  hostDisconnected() {
+    this.ticker.stop();
   }
 
   loadRom(name: string, rom: ArrayBuffer) {
@@ -27,37 +45,44 @@ export class AppController implements ReactiveController {
     this.host.requestUpdate();
   }
 
-  play() {
-    this.paused = false;
-    let counter = 0;
-    this.timer = setInterval(() => {
-      counter++;
-
-      if (counter % 5 === 0) {
-        this.chip.tick();
-        counter = 0;
-      }
+  private tick = () => {
+    for (let i = 0; i < this.speed; i++) {
       this.chip.performCycle();
-      this.host.requestUpdate();
-    }, 3);
+    }
+    if (this.chip.shouldBeep) {
+      this.speaker.start();
+    } else {
+      this.speaker.stop();
+    }
+    this.chip.tick();
+    this.host.requestUpdate();
+  };
+
+  play() {
+    this.ticker.start();
+    this.paused = false;
+    this.host.requestUpdate();
   }
 
   pause() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
+    this.ticker.stop();
     this.paused = true;
     this.host.requestUpdate();
   }
 
   reset() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
+    this.speaker.stop();
+    this.ticker.stop();
     this.romName = "";
     this.loaded = false;
     this.paused = true;
     this.chip.reset();
+    this.host.requestUpdate();
+  }
+
+  muteUnmute() {
+    this.muted = !this.muted;
+    this.speaker.mute(this.muted);
     this.host.requestUpdate();
   }
 
@@ -85,16 +110,5 @@ export class AppController implements ReactiveController {
 
   private mapCodeToKeyboard(code: string) {
     return keymap.indexOf(code);
-  }
-
-  hostConnected() {
-    document.addEventListener("keydown", this.handleKeyDown);
-    document.addEventListener("keyup", this.handleKeyUp);
-  }
-
-  hostDisconnected() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
   }
 }

@@ -319,6 +319,10 @@ export class Chip8 {
     }
   }
 
+  get shouldBeep(): boolean {
+    return this.soundTimer > 0;
+  }
+
   getData(): {
     vregisters: number[];
     I: number;
