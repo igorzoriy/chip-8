@@ -162,6 +162,10 @@ export class App extends LitElement {
     this.ctrl.reset();
   }
 
+  handleMuteUnmute() {
+    this.ctrl.muteUnmute();
+  }
+
   willUpdate() {
     this.renderDisplay();
   }
@@ -229,7 +233,9 @@ export class App extends LitElement {
         >
           Reset
         </button>
-        <button class="button">🔊 mute/unmute</button>
+        <button class="button" @click="${this.handleMuteUnmute}">
+          ${this.ctrl.muted ? "🔇 Unmute" : "🔊 Mute"}
+        </button>
       </section>
       <section class="registers">
         <h2 class="subheader">Registers</h2>
