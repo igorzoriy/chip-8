@@ -21,7 +21,10 @@ module.exports = {
     extensions: [".ts", ".js"],
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: "public/index.html" }),
+    new HtmlWebpackPlugin({
+      template: "public/index.html",
+      favicon: "public/favicon.ico",
+    }),
     new CopyPlugin({
       patterns: [{ from: "roms", to: "roms" }],
     }),
