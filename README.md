@@ -3,12 +3,11 @@
 [View the demo](https://igorzoriy.github.io/chip-8/)
 
 Yet another [CHIP-8](https://en.wikipedia.org/wiki/CHIP-8) interpreter written in TypeScript.  
-The goals of this project is to implement my first interpreter and try a bunch of modern libraries/tools/APIs. The project uses following technologies:
-
+The goals of this project is to implement my first interpreter and play with some libraries/tools/APIs. The project uses following technologies:
 - [TypeScript](https://www.typescriptlang.org/)
-- [Webpack](https://webpack.js.org/)
-- [Jest](https://jestjs.io/)
+- [Vite](https://vitejs.dev/)
 - [Lit](https://lit.dev/)
+- [Jest](https://jestjs.io/)
 - [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
 - [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
 
@@ -30,7 +29,7 @@ npm i
 ### Run dev server
 
 ```bash
-npm start
+npm run dev
 ```
 
 ### Run tests
